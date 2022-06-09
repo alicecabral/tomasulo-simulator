@@ -103,28 +103,23 @@ export default class Estado {
 
     verificaUFInstrucao(instrucao) {
     // Funcao que verifica em qual unidade funcional cada instrucao deve executar
-        switch (instrucao.operacao) {
-            case 'ADDD':
-                return 'Add'
-            case 'SUBD':
-                return 'Add'
-            case 'MULTD':
-                return 'Mult'
-            case 'DIVD':
-                return 'Mult'
-            case 'LD':
-                return 'Load'
-            case 'SD':
-                return 'Store'
-            case 'ADD':
-                return 'Integer'
-            case 'DADDUI':
-                return 'Integer'
-            case 'BEQ':
-                return 'Integer'
-            case 'BNEZ':
-                return 'Integer'
-        }
+    switch (instrucao) {
+        case "ADD":
+            return "ADD";
+        case "SUB":
+            return "ADD";
+        case "JMP":
+            return "JMP";
+        case "BEQ":
+            return "JMP";
+        case "LOAD":
+            return "LOAD";
+        case "STORE":
+            return "LOAD";
+        default:
+            console.log("Nao foi possivel reconhecer instrucao: " + instrucao);
+            return null
+    }
     }
 
     getFUVazia(tipoFU) {

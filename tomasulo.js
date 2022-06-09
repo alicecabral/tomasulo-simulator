@@ -3,7 +3,7 @@ import Estado from "./estado.js"
 
 
 function getConfig() {
-    var conf = {};
+    var conf = {};//config gerada pela funcao
 
     conf["nInst"] = $("#nInst").val();
     if(conf["nInst"] < 1) {
@@ -11,58 +11,45 @@ function getConfig() {
         return null;
     }
 
-    var ciclos = {}
+    
+    //define quantos ciclos para cada unidade de execução -> ADD MULT, LOAD,JMP
+    ciclos["ADD"] = $("#ciclosFPAdd").val();//Para Add e Sub
+    ciclos["MULT"] = $("#ciclosFPMul").val();//Para Mult e Div
+    ciclos["LOAD"] = $("#ciclosLoad").val();//Para Load e Store
+    //necessario mudar id do ciclos abaixo
+    ciclos["BEQ"] = $("#ciclosStore").val();// Para BNE e Beq
 
-    ciclos["Integer"] = $("#ciclosInt").val();
-    ciclos["Add"] = $("#ciclosFPAdd").val();
-    ciclos["Mult"] = $("#ciclosFPMul").val();
-    ciclos["Div"] = $("#ciclosFPDiv").val();
-    ciclos["Load"] = $("#ciclosLoad").val();
-    ciclos["Store"] = $("#ciclosStore").val();
 
-
-    if ((ciclos["Integer"] < 1) || (ciclos["Add"] < 1) || (ciclos["Div"] < 1) ||
-        (ciclos["Mult"] < 1) || (ciclos["Load"] < 1)  || (ciclos["Store"] < 1)) {
+    if (ciclos["ADD"] < 1 || (ciclos["MULT"] < 1) || (ciclos["LOAD"] < 1)  || (ciclos["BEQ"] < 1)) {
         alert("A quantidade de ciclos por instrução, para todas as unidades, deve ser de no mínimo 1 ciclo!");
         return null;
     }
 
-    conf["ciclos"] = ciclos
-
-    var unidades = {}
-    unidades["Integer"] = $("#fuInt").val();
-    unidades["Add"] = $("#fuFPAdd").val();
-    unidades["Mult"] = $("#fuFPMul").val();
+    conf["ciclos"] = ciclos;
+    //define quantidade de unidades de execução para cada tipo
+    var unidades = {};
+    unidades["ADD"] = $("#fuFPAdd").val();
+    unidades["MULT"] = $("#fuFPMul").val();
+    unidades["LOAD"] = $("#fuFPLOAD").val();//mudar id de unidade de execucao
+    unidades["BEQ"] = $("#fuLoad").val();//mudar id de unidade de execucao
     
-    if ((unidades["Integer"] < 1) || (unidades["Add"] < 1) ||
-    (unidades["Mult"] < 1)) {
+    if ((unidades["ADD"] < 1) || (unidades["BEQ"] < 1) ||
+    (unidades["MULT"] < 1) || (unidades["LOAD"] < 1)) {
         alert("A quantidade de unidades funcionais deve ser no mínimo 1!");
         return;
     }
     
-    var unidadesMem = {}
-    unidadesMem["Load"] = $("#fuLoad").val();
-    unidadesMem["Store"] = $("#fuStore").val();
-
-
-    if(unidades["Load"] < 1 || unidadesMem["Store"] < 1) {
-        alert("A quantidade de unidades funcionais de memória deve ser no mínimo 1!");
-        return;
-    }
-
-
     conf["unidades"] = unidades;
-    conf["unidadesMem"] = unidadesMem;
     return conf;
 }
 
-function getInst(i) {
+function getInst(i) {//retornar instrucao montada em MAP
     var inst = {};
     inst["indice"] = i;
-    inst["d"] = $(`#D${i}`).val();
-    inst["r"] = $(`#R${i}`).val();
-    inst["s"] = $(`#S${i}`).val();
-    inst["t"] = $(`#T${i}`).val();
+    inst["d"] = $(`#D${i}`).val();//nome da instrucao
+    inst["r"] = $(`#R${i}`).val();//primeiro registrador, registrador resultado
+    inst["s"] = $(`#S${i}`).val();//primeiro operador
+    inst["t"] = $(`#T${i}`).val();//ultimo operador ou reg
 
     return inst;
 }
@@ -96,13 +83,13 @@ function registradorInvalidoF(registrador) {
 }
 
 function validaInstrucao(instrucao) {
-    var unidade = getUnidadeInstrucao(instrucao["d"]);
+    var unidade = getUnidadeInstrucao(instrucao["d"]);//retorna unidade de execução referente à instrução
     if(!unidade) {
-        alert("O comando da instrução é inváilido");
+        alert("O comando da instrução é inválido");
         return false;
     }
 
-    if(unidade == "Load" || unidade == "Store") {
+    if(unidade == "LOAD") {
         var comando = instrucao["d"]
 
         if(comando == "LD" || comando == "SD") {
@@ -114,42 +101,27 @@ function validaInstrucao(instrucao) {
         }
     }
 
-    if(unidade == "Integer") {
+    if(unidade == "ADD") {
         var comando = instrucao["d"]
 
-        if(comando == "BEQ") {
+        if(comando == "ADD" || comando =="SUB") {//add r1,r2,r3
+            if(registradorInvalidoR(instrucao["r"]) || registradorInvalidoR(instrucao["s"]) || registradorInvalidoR(instrucao["t"]) ) {
+                alertValidaInstrucao(instrucao);
+                return false;
+            }
+            return true;
+        }
+        
+    }
+    if(unidade == "BEQ"){
+        if(comando =="BEQ" || comando =="BNE"){
             if(registradorInvalidoR(instrucao["r"]) || registradorInvalidoR(instrucao["s"]) || (instrucao["t"].replace(" ", "") == "")) {
                 alertValidaInstrucao(instrucao);
                 return false;
             }
             return true;
         }
-        if(comando == "BNEZ") {
-            if(registradorInvalidoR(instrucao["r"]) || (instrucao["s"].replace(" ", "") == "") || (instrucao["t"].replace(" ", "") != "")) {
-                alertValidaInstrucao(instrucao);
-                return false;
-            }
-            return true;
-        }
-        if(comando == "ADD") {
-            if(registradorInvalidoR(instrucao["r"]) || registradorInvalidoR(instrucao["s"]) || registradorInvalidoR(instrucao["t"])) {
-                alertValidaInstrucao(instrucao);
-                return false;
-            }
-            return true;
-        }
-        if(comando == "DADDUI") {
-            if(registradorInvalidoR(instrucao["r"]) || registradorInvalidoR(instrucao["s"]) || isNaN(parseInt(instrucao["t"]))) {
-                alertValidaInstrucao(instrucao);
-                return false;
-            }
-        }
-        return true;
-    }
 
-    if(registradorInvalidoF(instrucao["r"]) || registradorInvalidoF(instrucao["s"]) || registradorInvalidoF(instrucao["t"])) {
-        alertValidaInstrucao(instrucao);
-        return false;
     }
     return true;
 
@@ -172,31 +144,19 @@ function getAllInst(nInst) {
 function getUnidadeInstrucao(instrucao) {
     switch (instrucao) {
         case "ADD":
-            return "Integer";
-        case "DADDUI":
-            return "Integer";
+            return "ADD";
+        case "SUB":
+            return "ADD";
+        case "JMP":
+            return "JMP";
         case "BEQ":
-            return "Integer";
-        case "BNEZ":
-            return "Integer";
-
-        case "SD":
-            return 'Store';
-        case "LD":
-            return "Load";
-        
-
-        case "SUBD":
-            return "Add";
-        case "ADDD":
-            return "Add";
-
-        case "MULTD":
-            return "Mult";
-        case "DIVD":
-            return "Mult";
-
+            return "JMP";
+        case "LOAD":
+            return "LOAD";
+        case "STORE":
+            return "LOAD";
         default:
+            console.log("Nao foi possivel reconhecer instrucao: " + instrucao);
             return null
     }
 }
