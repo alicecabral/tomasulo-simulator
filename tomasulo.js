@@ -165,9 +165,9 @@ function validaInstrucao(instrucao) {
         console.log(instrucao);
         return false;
     }
-
+    var comando = instrucao["d"]
     if(unidade == "Load") {
-        var comando = instrucao["d"]
+        
 
         if(comando == "LD" || comando == "SD") {
             if(registradorInvalidoR(instrucao["r"]) || isNaN(parseInt(instrucao["s"])) || registradorInvalidoR(instrucao["t"])) {
@@ -179,7 +179,7 @@ function validaInstrucao(instrucao) {
     }
 
     if(unidade == "Branch") {
-        var comando = instrucao["d"]
+        
 
         if(comando == "BEQ" || comando =="BNE") {//beq r1,r2,ini
             if(registradorInvalidoR(instrucao["r"]) || registradorInvalidoR(instrucao["s"]) || (instrucao["t"].replace(" ", "") == "")) {
@@ -190,6 +190,7 @@ function validaInstrucao(instrucao) {
         }
     }
     if(unidade =="Add"){//add r1,r2,r3
+        
         if(comando == "ADD" || comando =="SUB") {
             if(registradorInvalidoR(instrucao["r"]) || registradorInvalidoR(instrucao["s"]) || registradorInvalidoR(instrucao["t"])) {
                 alertValidaInstrucao(instrucao);
@@ -199,6 +200,7 @@ function validaInstrucao(instrucao) {
         }
     }
     if(unidade=="Mult"){
+        
         if(comando == "MULT" || comando =="DIV") {//mult r1,r2
             if(registradorInvalidoR(instrucao["r"]) || registradorInvalidoR(instrucao["s"]) ) {
                 alertValidaInstrucao(instrucao);
@@ -337,17 +339,17 @@ function gerarTabelaEstadoUFHTML(diagrama) {
 function gerarTabelaEstadoMenHTML(diagrama) {
     var s = `<h3>Status dos registradores</h3> <table class="result">`;
 
-    for(var i = 0; i < 2; ++i) {
+      for(var i = 0; i < 1; i++) {
         s += `<tr>`
-        for(var j = 0; j < 16; j += 2) {
-            s += `<th>F${j+i*16}</th>`
+        for(var j = 0; j < 10; j++) {
+            s += `<th>R${j+i}</th>`
         }
-        s += `</tr> <tr>`
-        for(var j = 0; j < 16; j += 2) {
-            s += `<td id="F${j+i*16}">&nbsp;</td>`
-        }
-        s += `</tr>`
-    }
+        s += `</tr>`//<tr>
+        // for(var j = 0; j < 16; j += 2) {
+        //     s += `<td id="F${j+i*16}">&nbsp;</td>`
+        // }
+        // s += `</tr>`
+      }
 
     s += "</table>"
     $("#estadoMem").html(s);
@@ -519,6 +521,7 @@ $(document).ready(function() {
         }
         var insts = getAllInst(CONFIG["nInst"]);
         if(!insts) {
+            alert("insts é null, deu erro");
             return;
         }
         diagrama = new Estado(CONFIG, insts);
@@ -527,8 +530,6 @@ $(document).ready(function() {
         gerarTabelaEstadoUFHTML(diagrama);
         atualizaTabelaEstadoUFHTML(diagrama["uf"]);
         gerarTabelaEstadoMenHTML(diagrama);
-        gerarTabelaEstadoUFMem(diagrama);
-        atualizaTabelaEstadoUFMemHTML(diagrama["ufMem"]);
         terminou = false;
         $("#clock").html("<h3>Clock: <small id='clock'>0</small></h3>");
     });
