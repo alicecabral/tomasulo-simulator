@@ -3,8 +3,8 @@ export default class Estado {
         // salva as configurações passadas
         this.configuracao = {
             "numInstrucoes": CONFIG["nInst"], // quantidade de instrucoes
-            "ciclos": CONFIG["ciclos"],       // numero de ciclos gastos por cada UF 
-            "unidades": CONFIG["unidades"]    // número de ufs
+            "ciclos": CONFIG["ciclos"],       // numero de ciclos gastos por cada Unidade Funcional 
+            "unidades": CONFIG["unidades"]    // número de unidades funcionais
         };
 
         // cria o vetor de instrucoes
@@ -28,7 +28,9 @@ export default class Estado {
         
         // cria as unidades funcionais
         this.unidadesFuncionais = {};
+
         for (var tipoUnidade in CONFIG["unidades"]) {
+
             for (let i = 0; i < CONFIG["unidades"][tipoUnidade]; i++) {
                 let unidadeFuncional = {};
                 unidadeFuncional["instrucao"] = null;           // armazena a instrucao que esta executando
@@ -51,39 +53,40 @@ export default class Estado {
             
         }
 
-        // cria as unidades funcionais da memoria
-        this.unidadesFuncionaisMemoria = {}
-        for(var tipoUnidade in CONFIG["unidadesMem"]) {
-            for(let i = 0; i < CONFIG["unidadesMem"][tipoUnidade]; i++) {
-                let unidadeFuncionalMemoria = {};
-                unidadeFuncionalMemoria["instrucao"] = null;            // armazana a instrucao que esta executando
-                unidadeFuncionalMemoria["estadoInstrucao"] = null;      // salva todo o estado da instrucao
-                unidadeFuncionalMemoria["tipoUnidade"] = tipoUnidade;   // define o tipo da unidade
-                unidadeFuncionalMemoria["tempo"] = null;                // tempo que ainda falta pra instrucao acabar
+        // // cria as unidades funcionais da memoria
+        // this.unidadesFuncionaisMemoria = {}
+        // for(var tipoUnidade in CONFIG["unidadesMem"]) {
+        //     for(let i = 0; i < CONFIG["unidadesMem"][tipoUnidade]; i++) {
+        //         let unidadeFuncionalMemoria = {};
+        //         unidadeFuncionalMemoria["instrucao"] = null;            // armazana a instrucao que esta executando
+        //         unidadeFuncionalMemoria["estadoInstrucao"] = null;      // salva todo o estado da instrucao
+        //         unidadeFuncionalMemoria["tipoUnidade"] = tipoUnidade;   // define o tipo da unidade
+        //         unidadeFuncionalMemoria["tempo"] = null;                // tempo que ainda falta pra instrucao acabar
 
-                let nome = tipoUnidade + (i+1);                         //cria o nome da uf 
-                unidadeFuncionalMemoria["nome"] = nome;
-                unidadeFuncionalMemoria["ocupado"] = false;             // define se a uf ta ocuapda ou nao   
-                unidadeFuncionalMemoria["qi"] = null;                   // uf que esta gerando o valor de vi
-                unidadeFuncionalMemoria["qj"] = null;                   // uf que esta gerando o valor de vj (registrador de deslocamento)
+        //         let nome = tipoUnidade + (i+1);                         //cria o nome da uf 
+        //         unidadeFuncionalMemoria["nome"] = nome;
+        //         unidadeFuncionalMemoria["ocupado"] = false;             // define se a uf ta ocuapda ou nao   
+        //         unidadeFuncionalMemoria["qi"] = null;                   // uf que esta gerando o valor de vi
+        //         unidadeFuncionalMemoria["qj"] = null;                   // uf que esta gerando o valor de vj (registrador de deslocamento)
                 
-                unidadeFuncionalMemoria["operacao"] = null;             // operacao que esta sendo executada
-                unidadeFuncionalMemoria["endereco"] = null;             // endereco onde vai ser buscado
-                unidadeFuncionalMemoria["destino"] = null;              // registrador de destino
+        //         unidadeFuncionalMemoria["operacao"] = null;             // operacao que esta sendo executada
+        //         unidadeFuncionalMemoria["endereco"] = null;             // endereco onde vai ser buscado
+        //         unidadeFuncionalMemoria["destino"] = null;              // registrador de destino
                 
-                this.unidadesFuncionaisMemoria[nome] = unidadeFuncionalMemoria;
-            }
-        }
+        //         this.unidadesFuncionaisMemoria[nome] = unidadeFuncionalMemoria;
+        //     }
+        // }
 
         this.clock = 0;       // define o clock atual
 
         this.estacaoRegistradores = {}
-        // cria os registradores de ponto flutuante
-        for(let i = 0; i < 32; i += 2) {
-            this.estacaoRegistradores["F" + i] = null;
-        }
+        // // cria os registradores de ponto flutuante
+        // for(let i = 0; i < 32; i += 2) {
+        //     this.estacaoRegistradores["F" + i] = null;
+        // }
+
         // cria os registradores de inteiro (necessarios para impedir erros com as operacoes de inteiro)
-        for(let i = 0; i < 32; i += 1) {
+        for(let i = 0; i < 10; i++) {
             this.estacaoRegistradores["R" + i] = null;
         }
     }
@@ -103,49 +106,51 @@ export default class Estado {
 
     verificaUFInstrucao(instrucao) {
     // Funcao que verifica em qual unidade funcional cada instrucao deve executar
-        switch (instrucao.operacao) {
-            case 'ADDD':
-                return 'Add'
-            case 'SUBD':
-                return 'Add'
-            case 'MULTD':
-                return 'Mult'
-            case 'DIVD':
-                return 'Mult'
-            case 'LD':
-                return 'Load'
-            case 'SD':
-                return 'Store'
-            case 'ADD':
-                return 'Integer'
-            case 'DADDUI':
-                return 'Integer'
-            case 'BEQ':
-                return 'Integer'
-            case 'BNEZ':
-                return 'Integer'
-        }
+    switch (instrucao.operacao) {
+        case "ADD":
+            return "Add";
+        case "SUB":
+            return "Add";
+            
+        case "BEQ":
+            return "Branch";
+        case "BNE":
+            return "Branch";
+
+        case "SD":
+            return 'Load';
+        case "LD":
+            return "Load";
+        
+        case "MULT":
+            return "Mult";
+        case "DIV":
+            return "Mult";
+
+        default:
+            return null
+    }
     }
 
     getFUVazia(tipoFU) {
     // Funcao que busca a primeira UF vazia de um determinado tipo
 
-        // caso a instrucao seja de load/store, busca nas unidades de memoria
-        if ((tipoFU === 'Load') || (tipoFU === 'Store')) {
-            // percorre todas as unidades de memoria
-            for(let key in this.unidadesFuncionaisMemoria) {
-                var ufMem = this.unidadesFuncionaisMemoria[key];
+        // // caso a instrucao seja de load/store, busca nas unidades de memoria
+        // if ((tipoFU === 'Load') || (tipoFU === 'Store')) {
+        //     // percorre todas as unidades de memoria
+        //     for(let key in this.unidadesFuncionaisMemoria) {
+        //         var ufMem = this.unidadesFuncionaisMemoria[key];
 
-                // caso seja do tipo que esta buscando e esteja livre, retorna ela
-                if (ufMem.tipoUnidade === tipoFU) {
-                    if (!ufMem.ocupado) {
-                        return ufMem;
-                    }
-                }
-            }
-            // caso nao encontre nenhuma, retorna undefined
-            return undefined;
-        }
+        //         // caso seja do tipo que esta buscando e esteja livre, retorna ela
+        //         if (ufMem.tipoUnidade === tipoFU) {
+        //             if (!ufMem.ocupado) {
+        //                 return ufMem;
+        //             }
+        //         }
+        //     }
+        //     // caso nao encontre nenhuma, retorna undefined
+        //     return undefined;
+        // }
         // percorre todas as unidades funcionais
         for(let key in this.unidadesFuncionais) {
             var uf = this.unidadesFuncionais[key];
@@ -373,24 +378,27 @@ export default class Estado {
     // funcao da fase de issue do tomasulo
 
         let novaInstrucao = this.getNovaInstrucao();  // busca uma nova instrucao
-
+        console.log("==============================");
+        console.log(novaInstrucao);
         // se existe uma nova instrucao pra executar o issue
         if (novaInstrucao) {
             let ufInstrucao = this.verificaUFInstrucao(novaInstrucao.instrucao);  // verifica qual unidade essa instrucao usa
+            console.log("==============================");
+            console.log(ufInstrucao);
             let UFParaUsar = this.getFUVazia(ufInstrucao);                        // pega a primeira unidade disponivel
             
             // caso exista uma unidade livre, caso contrario, nao faz nada (bolha)
             if (UFParaUsar) {
                 // se a unidade e de memoria, aloca uma unidade de memoria, caso contrario uma unidade normal
-                if ((UFParaUsar.tipoUnidade == 'Load') || (UFParaUsar.tipoUnidade == 'Store'))
-                    this.alocaFuMem(UFParaUsar, novaInstrucao.instrucao, novaInstrucao);
-                else
+                //if ((UFParaUsar.tipoUnidade == 'Load') || (UFParaUsar.tipoUnidade == 'Store'))
+                //    this.alocaFuMem(UFParaUsar, novaInstrucao.instrucao, novaInstrucao);
+                //else
                     this.alocaFU(UFParaUsar, novaInstrucao.instrucao, novaInstrucao);
                 
                 // escreve em qual ciclo o issue aconteceu
                 novaInstrucao.issue = this.clock;
 
-                // caso a instrucao tenha escrita no registrador de destino, esqueve
+                // caso a instrucao tenha escrita no registrador de destino, esquece
                 if ((UFParaUsar.tipoUnidade !== 'Store') && (UFParaUsar.operacao !== 'BEQ') && (UFParaUsar.operacao !== 'BEQ'))
                     this.escreveEstacaoRegistrador(novaInstrucao.instrucao, UFParaUsar.nome);
             }
