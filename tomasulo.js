@@ -1,6 +1,72 @@
 //tomasulo.js
 import Estado from "./estado.js"
 
+var exemplo = {
+    "config": {
+        "ciclos": {
+            "ciclosInt": 3,
+            "ciclosFPAdd": 8,
+            "ciclosFPMul": 10,
+            "ciclosFPDiv": 15
+        },
+        "unidades": {
+            "fuLoad": 6,
+            "fuStore": 3,
+            "fuInt": 3,
+            "fuFPAdd": 3,
+            "fuFPMul": 2
+        }
+    },
+
+    "insts": [
+        {
+            "D": "ADD",
+            "R": "R2",
+            "S": "R0",
+            "T": "R1"
+        },
+        {
+            "D": "LD",
+            "R": "R2",
+            "S": "0",
+            "T": "R2"
+        },
+        {
+            "D": "MULT",
+            "R": "R0",
+            "S": "R2",
+            "T": "R2"
+        },
+        {
+            "D": "SUB",
+            "R": "R0",
+            "S": "R4",
+            "T": "R2"
+        },
+        {
+            "D": "DIV",
+            "R": "R10",
+            "S": "R4",
+            "T": "R6"
+        },
+        {
+            "D": "SD",
+            "R": "R6",
+            "S": "0",
+            "T": "R2"
+        },
+        {
+            "D": "BEQ",
+            "R": "R2",
+            "S": "R4",
+            "T": "ini"
+        }
+    ]
+}
+
+
+
+
 
 function getConfig() {
     var conf = {};
@@ -95,7 +161,8 @@ function registradorInvalidoF(registrador) {
 function validaInstrucao(instrucao) {
     var unidade = getUnidadeInstrucao(instrucao["d"]);
     if(!unidade) {
-        alert("O comando da instrução é inváilido");
+        alert("O comando da instrução é inváilido" + unidade + " " + instrucao) ;
+        console.log(instrucao);
         return false;
     }
 
@@ -103,7 +170,7 @@ function validaInstrucao(instrucao) {
         var comando = instrucao["d"]
 
         if(comando == "LD" || comando == "SD") {
-            if(registradorInvalidoF(instrucao["r"]) || isNaN(parseInt(instrucao["s"])) || registradorInvalidoR(instrucao["t"])) {
+            if(registradorInvalidoR(instrucao["r"]) || isNaN(parseInt(instrucao["s"])) || registradorInvalidoR(instrucao["t"])) {
                 alertValidaInstrucao(instrucao);
                 return false;
             }
@@ -330,14 +397,14 @@ function geraTabelaParaInserirInstrucoes(nInst) {
                         "<option selected value = \"\">None</option>" +
                         "<option value=\"LD\">LD</option>" +
                         "<option value=\"SD\">SD</option>" +
-                        "<option value=\"MULTD\">MULTD</option>" +
-                        "<option value=\"DIVD\">DIVD</option>" +
-                        "<option value=\"ADDD\">ADDD</option>" +
-                        "<option value=\"SUBD\">SUBD</option>" +
+                        "<option value=\"MULT\">MULT</option>" +
+                        "<option value=\"DIV\">DIV</option>" +
+                        
+                        "<option value=\"SUB\">SUB</option>" +
                         "<option value=\"ADD\">ADD</option>" +
-                        "<option value=\"DADDUI\">DADDUI</option>" +
+                        
                         "<option value=\"BEQ\">BEQ</option>" +
-                        "<option value=\"BNEZ\">BNEZ</option>" +
+                        "<option value=\"BNE\">BNE</option>" +
                     "</td>" +
                     "<td><input type=\"text\" name=\""+ r + "\" id=\""+ r + "\" size=\"3\" maxlength=\"3\" /></td>" +
                     "<td><input type=\"text\" name=\""+ s + "\" id=\""+ s + "\" size=\"3\" maxlength=\"5\" /></td>" +
@@ -352,14 +419,10 @@ function geraTabelaParaInserirInstrucoes(nInst) {
 // -----------------------------------------------------------------------------
 
 function carregaExemplo() {
-    var exN = $("#exemploSelect").val();
+    //var exN = $("#exemploSelect").val();
 
-    $.getJSON(`./exemplos/ex${exN}.json`, function() {
-        console.log("Lido :3");
-
-    }).fail(function() {
-      alert("Não foi possivel carregar o exemplo.")
-    }).done(function(data) {
+   
+    var data = exemplo;
         $("#nInst").val(data["insts"].length);
         var confirmou = confirmarNInst();
 
@@ -379,8 +442,7 @@ function carregaExemplo() {
         }
 
 
-    });
-}
+    };
 
 
 function confirmarNInst() {

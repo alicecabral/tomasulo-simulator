@@ -1,115 +1,141 @@
 <!DOCTYPE html>
-<html lang="pt-Br">
-<head>
-    <meta charset="utf-8">
-    <title>Tomasulo Simulator</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="index.css" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" >
-</head>
-<body>
-    <header class="jumbotron text-center">
-        <h1>Tomasulo Simulator</h1>
-    </header>
+<html lang="pt-br">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+        <link rel="stylesheet" href="style.css" />
+        <title>Simulador de Tomasulo</title>
+    </head>
 
-    <div class="row mx-5">
-        <aside class="col-4">
-            <p><a href="ajuda.html" target="_blank"><button type="button" name="ajuda" id="ajuda">?</button></a></p>
-            <p>
-                Lista de exemplos:<br />
-                <select size="1" name="exemploSelect" id="exemploSelect">
-                    <option value="00">---</option>
-                    <option value="01">Exemplo 01</option>
-                    <option value="02">Exemplo 02</option>
-                    <option value="03">Exemplo 03</option>
-                    <option value="04">Exemplo 04</option>
-                    <option value="05">Exemplo 05</option>
-                    <option value="06">Exemplo 06</option>
-                    <option value="07">Exemplo 07</option>
-                    <option value="08">Exemplo 08</option>
-                    <option value="09">Exemplo 09</option>
-                    <option value="10">Exemplo 10</option>
-                </select>
-                <button type="submit" name="carregaExemplo" id="carregaExemplo">Carregar</button>
-            </p>
-            <p>
-                Número de instruções:<br />
-                <input type="number" name="nInst" id="nInst" value="1" min="1" maxlength />
-                <button type="submit" name="confirmarNInst" id="confirmarNInst">Confirmar</button>
-            </p>
+    <body class="body">
+        <header class="header">
+            <h1>Simulador de Tomasulo</h1>
+        </header>
 
-            <p>Lista de instruções:</p>
-            <div id = "listaInstrucoes"></div>
+        <div class="parent col-12">
+            <div class="row"> 
+                <div class="left col-4">
+                    <button type="submit" name="carregaExemplo" id="carregaExemplo" class="botao">Executar Exemplo</button>
+                    <img src="imagens/info.png" width="15" height="15" onmouseover="getElementById('descricao1').style.display='block'" onmouseout="getElementById('descricao1').style.display='none'"/>
+                    <div id="descricao1" style="position:relative; height:10px; width:400px;display:none; font-size: small; text-align: center; ">Clique acima para ver um exemplo do algoritmo de Tomasulo.</div>
+                    
+                    <hr/>
+                    
+                    <p class="titulo"> 
+                        Instruções 
+                            <img src="imagens/info.png" width="15" height="15" onmouseover="getElementById('descricao2').style.display='block'" onmouseout="getElementById('descricao2').style.display='none'"/>
+                            <div id="descricao2" style="position:relative; height:10px; width:400px;display:none; font-size: small; text-align: center; ">Escolha a quantidade de instruções e confirme.</div>
+                        
+                    </p>
+                    
+                    <p class="subtitulo">
+                        Quantidade:
+                        <input type="number" name="nInst" id="nInst" value="1" min="1" class="form-control" aria-describedby="button-addon2" maxlength>
+                        <button type="submit" name="confirmarNInst" id="confirmarNInst" class="botao" onclick="geraTabelaParaInserirInstrucoes(nInst.value)">OK</button>
+                    </p>
+                    <p>
+                        <div id = "listaInstrucoes"></div>
+                    </p>
 
-            <p>Ciclos por instrução:</p>
-                <p>
-                    <td>Inteiro</td>
-                    <td><input type="number" min="1" value="1" name="ciclosInt" id="ciclosInt" /></td>
-                </p>
-                <p>
-                    <td>Load</td>
-                    <td><input type="number" min="1" value="1" name="ciclosLoad" id="ciclosLoad" /></td>
-                </p>
-                <p>
-                    <td>Store</td>
-                    <td><input type="number" min="1" value="1" name="ciclosStore" id="ciclosStore" /></td>
-                </p>
-                <p>
-                    <td>FP Add</td>
-                    <td><input type="number" min="1" value="1" name="ciclosFPAdd" id="ciclosFPAdd" /></td>
-                </p>
-                <p>
-                    <td>FP Mult</td>
-                    <td><input type="number" min="1" value="1" name="ciclosFPMul" id="ciclosFPMul" /></td>
-                </p>
-                <p>
-                    <td>FP Div</td>
-                    <td><input type="number" min="1" value="1" name="ciclosFPDiv" id="ciclosFPDiv" /></td>
-                </p>
-                <p>Quantidade FU's de Memória</p>
-                <p>
-                    <td>Load</td>
-                    <td><input type="number" min="1" value="1" name="fuLoad" id="fuLoad" /></td>
-                </p>
-                <p>
-                    <td>Store</td>
-                    <td><input type="number" min="1" value="1" name="fuStore" id="fuStore" /></td>
-                </p>
-                <p>Quantidade FU's</p>
-                <p>
-                    <td>Inteiro</td>
-                    <td><input type="number" min="1" value="1" name="fuInt" id="fuInt" /></td>
-                </p>
-                <p>
-                    <td>FP Add</td>
-                    <td><input type="number" min="1" value="1" name="fuFPAdd" id="fuFPAdd" /></td>
-                </p>
-                <p>
-                    <td>FP Mult</td>
-                    <td><input type="number" min="1" value="2" name="fuFPMul" id="fuFPMul" /></td>
-                </p>
+                    <hr/>
 
-                <br />
-                <button type="submit" id="enviar">Enviar</button>
-                <button type="reset" id="limpar">Limpar</button>
-        </aside>
+                    <p class="titulo">Ciclos por Instrução 
+                        <img src="imagens/info.png" width="15" height="15" onmouseover="getElementById('descricao3').style.display='block'" onmouseout="getElementById('descricao3').style.display='none'">
+                        <div id="descricao3" style="position:relative; height:10px; width:400px;display:none; font-size: small; text-align: center; ">Informe a quantidade de ciclos que cada tipo de instrução demanda.</div>
+                    </p>
+                    <p>
+                        <td>Inteiro</td>
+                        <td><input type="number" min="1" value="1" name="ciclosInt" id="ciclosInt" class="form-control" aria-describedby="button-addon2" /></td>
+                    </p>
+                    <p>
+                        <td>Load</td>
+                        <td><input type="number" min="1" value="1" name="ciclosLoad" id="ciclosLoad" class="form-control" aria-describedby="button-addon2"/></td>
+                    </p>
+                    <p>
+                        <td>Store</td>
+                        <td><input type="number" min="1" value="1" name="ciclosStore" id="ciclosStore" class="form-control" aria-describedby="button-addon2"/></td>
+                    </p>
+                    <p>
+                        <td>FP Add</td>
+                        <td><input type="number" min="1" value="1" name="ciclosFPAdd" id="ciclosFPAdd" class="form-control" aria-describedby="button-addon2"/></td>
+                    </p>
+                    <p>
+                        <td>FP Mult</td>
+                        <td><input type="number" min="1" value="1" name="ciclosFPMul" id="ciclosFPMul" class="form-control" aria-describedby="button-addon2"/></td>
+                    </p>
+                    <p>
+                        <td>FP Div</td>
+                        <td><input type="number" min="1" value="1" name="ciclosFPDiv" id="ciclosFPDiv" class="form-control" aria-describedby="button-addon2"/></td>
+                    </p>
 
-        <main class="col">
-            <div>
-                <button type="button" id="proximo">Proximo</button>
-                <button type="button" id="resultado">Resultado</button>
+                    <hr/>
+
+                    <p class="titulo">Quantidade de Unidades Funcionais   
+                        <img src="imagens/info.png" width="15" height="15" onmouseover="getElementById('descricao4').style.display='block'" onmouseout="getElementById('descricao4').style.display='none'">
+                        <div id="descricao4" style="position:relative; height:10px; width:400px;display:none; font-size: small; text-align: center; ">Informe quantas unidades funcionais de cada tipo existem.</div></p>
+                    <p>
+                        <td>Load</td>
+                        <td><input type="number" min="1" value="1" name="fuLoad" id="fuLoad" class="form-control" aria-describedby="button-addon2"/></td>
+                    </p>
+                    <p>
+                        <td>Store</td>
+                        <td><input type="number" min="1" value="1" name="fuStore" id="fuStore" class="form-control" aria-describedby="button-addon2"/></td>
+                    </p>
+
+                    <p>
+                        <td>Inteiro</td>
+                        <td><input type="number" min="1" value="1" name="fuInt" id="fuInt" class="form-control" aria-describedby="button-addon2"/></td>
+                    </p>
+                    <p>
+                        <td>FP Add</td>
+                        <td><input type="number" min="1" value="1" name="fuFPAdd" id="fuFPAdd" class="form-control" aria-describedby="button-addon2"/></td>
+                    </p>
+                    <p>
+                        <td>FP Mult</td>
+                        <td><input type="number" min="1" value="2" name="fuFPMul" id="fuFPMul" class="form-control" aria-describedby="button-addon2"/></td>
+                    </p>
+
+                    <br/>
+
+                    <button type="submit" id="enviar" class="botao">Enviar</button>
+                    <button type="reset" id="limpar" class="botao">Limpar</button>
+                        <img src="imagens/info.png" width="15" height="15" onmouseover="getElementById('descricao5').style.display='block'" onmouseout="getElementById('descricao5').style.display='none'">
+                        <div id="descricao5" style="position:relative; height:10px; width:400px;display:none; font-size: small; text-align: center; ">O botão "Limpar" reseta todos os valores preenchidos.</div>
+                        
+                </div>
+
+                <div class="right col-8">
+                    <button type="button" id="proximo">Próximo Ciclo
+                        <img src="imagens/seta.png" width="15" height="15" style="margin-left:10px">
+                    </button> 
+                    <img src="imagens/info.png" width="15" height="15" onmouseover="getElementById('descricao6').style.display='block'" onmouseout="getElementById('descricao6').style.display='none'">
+                    <div id="descricao6" style="position:relative; height:10px; width:400px;display:none; font-size: small; text-align: center; margin-left: 200px; margin-bottom: 10px;">O botão "Próximo Ciclo" avança para o proximo ciclo.</div>
+                    </p>
+                    <button type="button" id="resultado">Resultado Final
+                        <img src="imagens/verifica.png" width="15" height="15" style="margin-left:10px">
+                    </button> 
+                    <img src="imagens/info.png" width="15" height="15" onmouseover="getElementById('descricao7').style.display='block'" onmouseout="getElementById('descricao7').style.display='none'">
+                    <div id="descricao7" style="position:relative; height:10px; width:600px;display:none; font-size: small; text-align: center; margin-left: 110px; margin-bottom: 10px;">O botão "Resultado Final" apresenta o resultado final da execução do algoritmo.</div>
+                </div>
             </div>
+        </div>
 
-            <div id="clock"></div>
-            <div id="estadoInst"></div>
-            <div id="estadoMemUF"></div>
-            <div id="estadoUF"></div>
-            <div id="estadoMem"></div>
-        </main>
-    </div>
+            <main class="col">
+                <div>
+                </div>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="estado.js" type="module"></script>
-<script src="tomasulo.js" type="module"></script>
-</body>
+                <div id="clock"></div>
+                <div id="estadoInst"></div>
+                <div id="estadoMemUF"></div>
+                <div id="estadoUF"></div>
+                <div id="estadoMem"></div>
+            </main>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="estado.js" type="module"></script>
+        <script src="tomasulo.js" type="module"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+    </body>
+
 </html>
