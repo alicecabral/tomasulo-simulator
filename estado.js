@@ -169,26 +169,22 @@ export default class Estado {
     getCiclos(instrucao) {
     // Funcai que busca na configuracao a quantidade de ciclos gastas em cada instrucao
         switch (instrucao.operacao) {
-            case 'ADDD':
+            case 'ADD':
                 return parseInt(this.configuracao.ciclos['Add']);
-            case 'SUBD':
+            case 'SUB':
                 return parseInt(this.configuracao.ciclos['Add']);
-            case 'MULTD':
+            case 'MULT':
                 return parseInt(this.configuracao.ciclos['Mult']);
-            case 'DIVD':
-                return parseInt(this.configuracao.ciclos['Div']);
+            case 'DIV':
+                return parseInt(this.configuracao.ciclos['Mult']);
             case 'LD':
                 return parseInt(this.configuracao.ciclos['Load']);
             case 'SD':
-                return parseInt(this.configuracao.ciclos['Store']);
-            case 'ADD':
-                return parseInt(this.configuracao.ciclos['Integer']);
-            case 'DADDUI':
-                return parseInt(this.configuracao.ciclos['Integer']);
+                return parseInt(this.configuracao.ciclos['Load']);
             case 'BEQ':
-                return parseInt(this.configuracao.ciclos['Integer']);
-            case 'BNEZ':
-                return parseInt(this.configuracao.ciclos['Integer']);
+                return parseInt(this.configuracao.ciclos['Branch']);
+            case 'BNE':
+                return parseInt(this.configuracao.ciclos['Branch']);
         }
     }
 
@@ -246,7 +242,7 @@ export default class Estado {
         let reg_k_inst;
 
         // caso seja uma das instrucoes condicionais
-        if ((instrucao.operacao === 'BNEZ') || (instrucao.operacao === 'BEQ')) {
+        if ((instrucao.operacao === 'BNE') || (instrucao.operacao === 'BEQ')) {
             reg_j = this.estacaoRegistradores[instrucao.registradorR];   // busca o nome da uf q esta usando o registrador r
             reg_k = this.estacaoRegistradores[instrucao.registradorS];   // busca o nome da uf q esta usando o registrador s
 
@@ -386,7 +382,8 @@ export default class Estado {
             console.log("==============================");
             console.log(ufInstrucao);
             let UFParaUsar = this.getFUVazia(ufInstrucao);                        // pega a primeira unidade disponivel
-            
+            console.log("============================== UF para usar");
+            console.log(UFParaUsar);
             // caso exista uma unidade livre, caso contrario, nao faz nada (bolha)
             if (UFParaUsar) {
                 // se a unidade e de memoria, aloca uma unidade de memoria, caso contrario uma unidade normal
@@ -408,20 +405,20 @@ export default class Estado {
     executaInstrucao() {
     // funcao da fase de execucao do tomasulo
 
-        // percorre todas as unidades funcionais da memoria
-        for(let key in this.unidadesFuncionaisMemoria) {
-            var ufMem = this.unidadesFuncionaisMemoria[key];
+        // // percorre todas as unidades funcionais da memoria
+        // for(let key in this.unidadesFuncionaisMemoria) {
+        //     var ufMem = this.unidadesFuncionaisMemoria[key];
 
-            // caso a unidade esteja ocupada e nao esteja esperando ninguem
-            if ((ufMem.ocupado === true) && (ufMem.qi === null) && (ufMem.qj === null)) {
-                ufMem.tempo = ufMem.tempo - 1;   // decrementa um ciclo para o termino da execucao
+        //     // caso a unidade esteja ocupada e nao esteja esperando ninguem
+        //     if ((ufMem.ocupado === true) && (ufMem.qi === null) && (ufMem.qj === null)) {
+        //         ufMem.tempo = ufMem.tempo - 1;   // decrementa um ciclo para o termino da execucao
 
-                // caso o tempo chegou a 0, escreve em qual ciclo a execucao terminou
-                if (ufMem.tempo === 0) {
-                    ufMem.estadoInstrucao.exeCompleta = this.clock;
-                }
-            }
-        }
+        //         // caso o tempo chegou a 0, escreve em qual ciclo a execucao terminou
+        //         if (ufMem.tempo === 0) {
+        //             ufMem.estadoInstrucao.exeCompleta = this.clock;
+        //         }
+        //     }
+        // }
 
         // percorre todas as unidades funcionais
         for(let key in this.unidadesFuncionais) {

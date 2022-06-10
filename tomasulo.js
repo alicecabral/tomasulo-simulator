@@ -281,7 +281,17 @@ function atualizaTabelaEstadoUFHTML(ufs) {
 
 function atualizaTabelaEstadoMenHTML(men) {
     for (var reg in men) {
-        $(`#${reg}`).html(men[reg] ? men[reg] : "&nbsp;");
+        var teste = reg.charAt(1)//R0
+        if(men[reg] !=null){
+            console.log("entreiiii  " + `#F${teste}`);
+            console.log(men[reg]);
+            
+            $(`#F${teste}`).html(men[reg]);
+
+        }else{
+            $(`#F${teste}`).html("&nbsp;");
+        }
+        
     }
 }
 
@@ -344,14 +354,14 @@ function gerarTabelaEstadoMenHTML(diagrama) {
         for(var j = 0; j < 10; j++) {
             s += `<th>R${j+i}</th>`
         }
-        s += `</tr>`//<tr>
-        // for(var j = 0; j < 16; j += 2) {
-        //     s += `<td id="F${j+i*16}">&nbsp;</td>`
-        // }
-        // s += `</tr>`
+        s += `</tr><tr>`
+        for(var j = 0; j < 10; j ++) {
+            s += `<td id="F${j+i}">&nbsp;</td>`
+        }
+        s += `</tr>`
       }
 
-    s += "</table>"
+    s += "</table><br>"
     $("#estadoMem").html(s);
 }
 

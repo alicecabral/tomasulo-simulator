@@ -3,6 +3,7 @@ table {
 }
 
 th, td {
+    overflow: auto;
 	padding: 2px;
 }
 
