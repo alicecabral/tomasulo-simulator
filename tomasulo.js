@@ -77,58 +77,55 @@ function getConfig() {
         return null;
     }
 
-    var ciclos = {}
+    var ciclos = {}//4 tipos de ciclos para as instrucoes
 
-    ciclos["Integer"] = $("#ciclosInt").val();
-    ciclos["Add"] = $("#ciclosFPAdd").val();
-    ciclos["Mult"] = $("#ciclosFPMul").val();
-    ciclos["Div"] = $("#ciclosFPDiv").val();
-    ciclos["Load"] = $("#ciclosLoad").val();
-    ciclos["Store"] = $("#ciclosStore").val();
+    ciclos["Branch"] = $("#ciclosInt").val();//trocar Branch por branch, BEQ e BNEZ
+    ciclos["Add"] = $("#ciclosFPAdd").val();//ADD e SUB
+    ciclos["Mult"] = $("#ciclosFPMul").val();// MULT e DIV
+    ciclos["Load"] = $("#ciclosLoad").val();// LOAD STORE
 
 
-    if ((ciclos["Integer"] < 1) || (ciclos["Add"] < 1) || (ciclos["Div"] < 1) ||
-        (ciclos["Mult"] < 1) || (ciclos["Load"] < 1)  || (ciclos["Store"] < 1)) {
+    if ((ciclos["Branch"] < 1) || (ciclos["Add"] < 1) || (ciclos["Mult"] < 1) || (ciclos["Load"] < 1)) {
         alert("A quantidade de ciclos por instrução, para todas as unidades, deve ser de no mínimo 1 ciclo!");
         return null;
     }
 
     conf["ciclos"] = ciclos
 
-    var unidades = {}
-    unidades["Integer"] = $("#fuInt").val();
+    var unidades = {}//3 unidades de execução
+    unidades["Branch"] = $("#fuInt").val();
     unidades["Add"] = $("#fuFPAdd").val();
     unidades["Mult"] = $("#fuFPMul").val();
-    
-    if ((unidades["Integer"] < 1) || (unidades["Add"] < 1) ||
-    (unidades["Mult"] < 1)) {
+    unidades["Load"] = $("#fuLoad").val();
+    if ((unidades["Branch"] < 1) || (unidades["Add"] < 1) ||
+    (unidades["Mult"] < 1) || (unidades["Load"] < 1)) {
         alert("A quantidade de unidades funcionais deve ser no mínimo 1!");
         return;
     }
     
-    var unidadesMem = {}
-    unidadesMem["Load"] = $("#fuLoad").val();
-    unidadesMem["Store"] = $("#fuStore").val();
+    // var unidadesMem = {}
+    // unidadesMem["Load"] = $("#fuLoad").val();
+    // unidadesMem["Store"] = $("#fuStore").val();
 
 
-    if(unidades["Load"] < 1 || unidadesMem["Store"] < 1) {
-        alert("A quantidade de unidades funcionais de memória deve ser no mínimo 1!");
-        return;
-    }
+    // if(unidades["Load"] < 1 || unidadesMem["Store"] < 1) {
+    //     alert("A quantidade de unidades funcionais de memória deve ser no mínimo 1!");
+    //     return;
+    // }
 
 
     conf["unidades"] = unidades;
-    conf["unidadesMem"] = unidadesMem;
+    // conf["unidadesMem"] = unidadesMem;
     return conf;
 }
 
 function getInst(i) {
     var inst = {};
     inst["indice"] = i;
-    inst["d"] = $(`#D${i}`).val();
-    inst["r"] = $(`#R${i}`).val();
-    inst["s"] = $(`#S${i}`).val();
-    inst["t"] = $(`#T${i}`).val();
+    inst["d"] = $(`#D${i}`).val();//nome
+    inst["r"] = $(`#R${i}`).val();//1 reg
+    inst["s"] = $(`#S${i}`).val();//1 op
+    inst["t"] = $(`#T${i}`).val();//ultimo op
 
     return inst;
 }
@@ -168,9 +165,9 @@ function validaInstrucao(instrucao) {
         console.log(instrucao);
         return false;
     }
-
-    if(unidade == "Load" || unidade == "Store") {
-        var comando = instrucao["d"]
+    var comando = instrucao["d"]
+    if(unidade == "Load") {
+        
 
         if(comando == "LD" || comando == "SD") {
             if(registradorInvalidoR(instrucao["r"]) || isNaN(parseInt(instrucao["s"])) || registradorInvalidoR(instrucao["t"])) {
@@ -181,44 +178,39 @@ function validaInstrucao(instrucao) {
         }
     }
 
-    if(unidade == "Integer") {
-        var comando = instrucao["d"]
+    if(unidade == "Branch") {
+        
 
-        if(comando == "BEQ") {
+        if(comando == "BEQ" || comando =="BNE") {//beq r1,r2,ini
             if(registradorInvalidoR(instrucao["r"]) || registradorInvalidoR(instrucao["s"]) || (instrucao["t"].replace(" ", "") == "")) {
                 alertValidaInstrucao(instrucao);
                 return false;
             }
             return true;
         }
-        if(comando == "BNEZ") {
-            if(registradorInvalidoR(instrucao["r"]) || (instrucao["s"].replace(" ", "") == "") || (instrucao["t"].replace(" ", "") != "")) {
-                alertValidaInstrucao(instrucao);
-                return false;
-            }
-            return true;
-        }
-        if(comando == "ADD") {
+    }
+    if(unidade =="Add"){//add r1,r2,r3
+        
+        if(comando == "ADD" || comando =="SUB") {
             if(registradorInvalidoR(instrucao["r"]) || registradorInvalidoR(instrucao["s"]) || registradorInvalidoR(instrucao["t"])) {
                 alertValidaInstrucao(instrucao);
                 return false;
             }
             return true;
         }
-        if(comando == "DADDUI") {
-            if(registradorInvalidoR(instrucao["r"]) || registradorInvalidoR(instrucao["s"]) || isNaN(parseInt(instrucao["t"]))) {
+    }
+    if(unidade=="Mult"){
+        
+        if(comando == "MULT" || comando =="DIV") {//mult r1,r2
+            if(registradorInvalidoR(instrucao["r"]) || registradorInvalidoR(instrucao["s"]) ) {
                 alertValidaInstrucao(instrucao);
                 return false;
             }
+            return true;
         }
-        return true;
-    }
 
-    if(registradorInvalidoF(instrucao["r"]) || registradorInvalidoF(instrucao["s"]) || registradorInvalidoF(instrucao["t"])) {
-        alertValidaInstrucao(instrucao);
-        return false;
     }
-    return true;
+    
 
 }
 
@@ -239,25 +231,20 @@ function getAllInst(nInst) {
 function getUnidadeInstrucao(instrucao) {
     switch (instrucao) {
         case "ADD":
-            return "Integer";
-        case "DADDUI":
-            return "Integer";
+            return "Add";
+        case "SUB":
+            return "Add";
+            
         case "BEQ":
-            return "Integer";
+            return "Branch";
         case "BNE":
-            return "Integer";
+            return "Branch";
 
         case "SD":
-            return 'Store';
+            return 'Load';
         case "LD":
             return "Load";
         
-
-        case "SUB":
-            return "Add";
-        case "ADD":
-            return "Add";
-
         case "MULT":
             return "Mult";
         case "DIV":
@@ -352,17 +339,17 @@ function gerarTabelaEstadoUFHTML(diagrama) {
 function gerarTabelaEstadoMenHTML(diagrama) {
     var s = `<h3>Status dos registradores</h3> <table class="result">`;
 
-    for(var i = 0; i < 2; ++i) {
+      for(var i = 0; i < 1; i++) {
         s += `<tr>`
-        for(var j = 0; j < 16; j += 2) {
-            s += `<th>F${j+i*16}</th>`
+        for(var j = 0; j < 10; j++) {
+            s += `<th>R${j+i}</th>`
         }
-        s += `</tr> <tr>`
-        for(var j = 0; j < 16; j += 2) {
-            s += `<td id="F${j+i*16}">&nbsp;</td>`
-        }
-        s += `</tr>`
-    }
+        s += `</tr>`//<tr>
+        // for(var j = 0; j < 16; j += 2) {
+        //     s += `<td id="F${j+i*16}">&nbsp;</td>`
+        // }
+        // s += `</tr>`
+      }
 
     s += "</table>"
     $("#estadoMem").html(s);
@@ -534,6 +521,7 @@ $(document).ready(function() {
         }
         var insts = getAllInst(CONFIG["nInst"]);
         if(!insts) {
+            alert("insts é null, deu erro");
             return;
         }
         diagrama = new Estado(CONFIG, insts);
@@ -542,8 +530,6 @@ $(document).ready(function() {
         gerarTabelaEstadoUFHTML(diagrama);
         atualizaTabelaEstadoUFHTML(diagrama["uf"]);
         gerarTabelaEstadoMenHTML(diagrama);
-        gerarTabelaEstadoUFMem(diagrama);
-        atualizaTabelaEstadoUFMemHTML(diagrama["ufMem"]);
         terminou = false;
         $("#clock").html("<h3>Clock: <small id='clock'>0</small></h3>");
     });
