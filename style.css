@@ -8,9 +8,28 @@ th, td {
 }
 
 .result, .result td, .result th {
-	border: 1px solid red;
+	border: 1px solid black;
 	border-collapse: collapse;
-	padding: 5px;
+	padding: 10px;
+    text-align: center;
+    font:  15px arial, sans-serif;
+    margin: auto;
+    margin-top: 18px;
+}
+
+h3 {
+    font: bold 20px arial, sans-serif;
+    background-color: #CFCFCF;
+    text-align: center;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    padding: 5px;
+    margin-top:18px;
+}
+
+.result th {
+    background: #CFCFCF;
+    font: bold 15px arial, sans-serif;
 }
 
 body {
@@ -91,8 +110,7 @@ hr {
     font: bold 15px arial, sans-serif;
     border-radius: 10px;
     border: 0.5px solid black;
-    margin-left: 300px;
-    margin-bottom: 10px;
+    margin-left: 320px;
 }
 
 #resultado {
@@ -103,6 +121,5 @@ hr {
     font: bold 15px arial, sans-serif;
     border-radius: 10px;
     border: 0.5px solid black;
-    margin-left: 300px;
-    margin-bottom: 10px;
+    margin-left: 320px;
 }
