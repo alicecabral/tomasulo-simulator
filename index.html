@@ -16,9 +16,9 @@
         <div class="parent col-12">
             <div class="row"> 
                 <div class="left col-4">
-                    <button type="submit" name="carregaExemplo" id="carregaExemplo" class="botao">Executar Exemplo</button>
+                    <button type="submit" name="carregaExemplo" id="carregaExemplo" class="botao">Exemplo</button>
                     <img src="imagens/info.png" width="15" height="15" onmouseover="getElementById('descricao1').style.display='block'" onmouseout="getElementById('descricao1').style.display='none'"/>
-                    <div id="descricao1" style="position:relative; height:10px; width:400px;display:none; font-size: small; text-align: center; ">Clique acima para ver um exemplo do algoritmo de Tomasulo.</div>
+                    <div id="descricao1" style="position:relative; height:30px; width:400px;display:none; font-size: small; text-align: center; ">Clique acima para carregar um exemplo de instruções. Depois clique em "Enviar".</div>
                     
                     <hr/>
                     
@@ -96,27 +96,23 @@
                         <img src="imagens/seta.png" width="15" height="15" style="margin-left:10px">
                     </button> 
                     <img src="imagens/info.png" width="15" height="15" onmouseover="getElementById('descricao6').style.display='block'" onmouseout="getElementById('descricao6').style.display='none'">
-                    <div id="descricao6" style="position:relative; height:10px; width:400px;display:none; font-size: small; text-align: center; margin-left: 200px; margin-bottom: 10px;">O botão "Próximo Ciclo" avança para o proximo ciclo.</div>
+                    <div id="descricao6" style="position:relative; height:20px; width:400px;display:none; font-size: small; text-align: center; margin-left: 220px; margin-bottom: 20px; margin-top:5px;">O botão "Próximo Ciclo" avança para o proximo ciclo.</div>
                     </p>
                     <button type="button" id="resultado">Resultado Final
                         <img src="imagens/verifica.png" width="15" height="15" style="margin-left:10px">
                     </button> 
                     <img src="imagens/info.png" width="15" height="15" onmouseover="getElementById('descricao7').style.display='block'" onmouseout="getElementById('descricao7').style.display='none'">
-                    <div id="descricao7" style="position:relative; height:10px; width:600px;display:none; font-size: small; text-align: center; margin-left: 110px; margin-bottom: 10px;">O botão "Resultado Final" apresenta o resultado final da execução do algoritmo.</div>
+                    <div id="descricao7" style="position:relative; height:10px; width:600px;display:none; font-size: small; text-align: center; margin-left: 120px; margin-bottom: 20px; margin-top:5px;">O botão "Resultado Final" apresenta o resultado final da execução do algoritmo.</div>
+                    
+                    <div id="clock" class="titulo-tabela"></div>
+                    <div id="estadoInst" class="titulo-tabela"></div>
+                    <div id="estadoMemUF" class="titulo-tabela"></div>
+                    <div id="estadoUF" class="titulo-tabela"></div>
+                    <div id="estadoMem" class="titulo-tabela"></div>
                 </div>
             </div>
         </div>
 
-            <main class="col">
-                <div>
-                </div>
-
-                <div id="clock"></div>
-                <div id="estadoInst"></div>
-                <div id="estadoMemUF"></div>
-                <div id="estadoUF"></div>
-                <div id="estadoMem"></div>
-            </main>
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script src="estado.js" type="module"></script>

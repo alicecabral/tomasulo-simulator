@@ -294,7 +294,7 @@ function atualizaClock(clock) {
 
 function gerarTabelaEstadoInstrucaoHTML(diagrama) {
     var s = (
-        "<h3>Status das instruções</h3><table class='result'>"
+        "<h3>Status das Instruções</h3><table class='result'>"
         + "<tr><th></th><th>Instrução</th><th>i</th><th>j</th>"
         + "<th>k</th><th>Issue</th><th>Exec.<br>Completa</th><th>Write</th></tr>"
     );
@@ -315,7 +315,7 @@ function gerarTabelaEstadoInstrucaoHTML(diagrama) {
 
 function gerarTabelaEstadoUFHTML(diagrama) {
     var s = (
-        "<h3>Reservations Stations</h3><table class='result'><tr> <th>Tempo</th> <th>UF</th> <th>Ocupado</th>"
+        "<h3>Estações de Reserva</h3><table class='result'><tr> <th>Tempo</th> <th>UF</th> <th>Ocupado</th>"
         + "<th>Op</th> <th>Vj</th> <th>Vk</th> <th>Qj</th> <th>Qk</th>"
     );
 
@@ -337,7 +337,7 @@ function gerarTabelaEstadoUFHTML(diagrama) {
 }
 
 function gerarTabelaEstadoMenHTML(diagrama) {
-    var s = `<h3>Status dos registradores</h3> <table class="result">`;
+    var s = `<h3>Status dos Registradores</h3> <table class="result">`;
 
       for(var i = 0; i < 1; i++) {
         s += `<tr>`
