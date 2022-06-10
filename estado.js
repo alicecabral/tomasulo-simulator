@@ -398,7 +398,7 @@ export default class Estado {
                 // escreve em qual ciclo o issue aconteceu
                 novaInstrucao.issue = this.clock;
 
-                // caso a instrucao tenha escrita no registrador de destino, esqueve
+                // caso a instrucao tenha escrita no registrador de destino, esquece
                 if ((UFParaUsar.tipoUnidade !== 'Store') && (UFParaUsar.operacao !== 'BEQ') && (UFParaUsar.operacao !== 'BEQ'))
                     this.escreveEstacaoRegistrador(novaInstrucao.instrucao, UFParaUsar.nome);
             }

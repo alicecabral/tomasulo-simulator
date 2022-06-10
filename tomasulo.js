@@ -535,6 +535,7 @@ $(document).ready(function() {
     });
 
     $("#proximo").click(function() {
+        
         if(!diagrama) {
             alert("Envie primeiro");
             return;
