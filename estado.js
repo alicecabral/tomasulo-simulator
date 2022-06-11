@@ -11,7 +11,10 @@ export default class Estado {
         this.estadoInstrucoes = [];
         for(let i = 0; i < this.configuracao["numInstrucoes"]; i++) {
             let linha = {}
-            linha["instrucao"] = {                      // armazena a instrucao
+            linha["instrucao"] = {  // armazena a instrucao
+                "id":i,
+                "valido":true,
+                "aptoCommit":false,
                 "operacao": instrucoes[i]["d"],
                 "registradorR": instrucoes[i]["r"],
                 "registradorS": instrucoes[i]["s"],
@@ -22,6 +25,7 @@ export default class Estado {
             linha["issue"] = null;                     // ciclo onde ocorreu o issue
             linha["exeCompleta"] = null;               // ciclo onde a execucao terminou
             linha["write"] = null;                     // ciclo onde foi escrito
+            linha["commit"] = null; 
             this.estadoInstrucoes[i] = linha;
         
         }
@@ -91,6 +95,8 @@ export default class Estado {
         }
     }
 
+    BufferReordenamento = [];
+
     getNovaInstrucao() {
     // Funcao a busca de uma nova instrucao
     // Percorre todo o vetor de instrucoes procurando por uma em que não ocorreu issue ainda. retornando a primeira que encontou
@@ -102,6 +108,83 @@ export default class Estado {
                 return element;
         }
         return undefined;
+    }
+
+    invalidaInstrucoes(indexInicial,indexFinal){
+        for(let i = indexInicial;i<indexFinal;i++){
+            this.estadoInstrucoes[i].instrucao.valido = false;
+        }
+    }
+
+    limpaQuadro(element){
+        element["issue"] = null;                     // ciclo onde ocorreu o issue
+        element["exeCompleta"] = null;               // ciclo onde a execucao terminou
+        element["write"] = null;
+        element["commit"] = null;
+        this.estadoInstrucoes[element.instrucao.id].aptoCommit = false;
+    }
+    limpaUnidadeFuncional(element){
+        console.info(this.unidadesFuncionais);
+        for (var uf in this.unidadesFuncionais){
+            console.info("Limpando UF:");
+            console.info(uf);
+            if( this.unidadesFuncionais[uf].instrucao != undefined){
+                console.info(" uf id = " + this.unidadesFuncionais[uf].instrucao.id + "        id = " +element.id)
+                if(this.unidadesFuncionais[uf].instrucao.id == element.instrucao.id){
+
+                    console.info("entreiii");
+                    //let element  =this.unidadesFuncionais[]
+                    this.unidadesFuncionais[uf].instrucao = null;
+                    this.unidadesFuncionais[uf].estadoInstrucao = null;
+                    this.unidadesFuncionais[uf].tempo = null;
+                    this.unidadesFuncionais[uf].ocupado = false;
+                    this.unidadesFuncionais[uf].operacao = null;
+                    this.unidadesFuncionais[uf].vj = null;
+                    this.unidadesFuncionais[uf].vk = null;
+                    this.unidadesFuncionais[uf].qj = null;
+                    this.unidadesFuncionais[uf].qk = null;
+                    // "instrucao": null,
+                    // "estadoInstrucao": null,
+                    // "tipoUnidade": "Branch",
+                    // "tempo": null,
+                    // "nome": "Branch3",
+                    // "ocupado": false,
+                    // "operacao": null,
+                    // "vj": null,
+                    // "vk": null,
+                    // "qj": null,
+                    // "qk": null
+                    
+                }
+            }
+        }
+        
+    }
+
+    PulaParaLabel(index,indexInicial){// BEQ x,x, index
+        
+                                    
+        if(indexInicial>index){
+            for(let i = index ;i < indexInicial;i++){
+                let element = this.estadoInstrucoes[i];
+                
+                this.limpaQuadro(element);
+                
+                
+            }
+            
+            
+        }
+        for(let i = indexInicial ;i<this.estadoInstrucoes.length;i++){
+            
+            let element = this.estadoInstrucoes[i];
+            console.info(element);
+            this.limpaUnidadeFuncional(element);
+            this.limpaQuadro(element);
+        }
+        
+        
+        //this.invalidaInstrucoes(index,this.estadoInstrucoes.length);
     }
 
     verificaUFInstrucao(instrucao) {
@@ -192,7 +275,7 @@ export default class Estado {
     // Funcao que aloca uma unidade funcional de memória para uma instrucao
         uf.instrucao = instrucao;
         uf.estadoInstrucao = estadoInstrucao;
-        uf.tempo = this.getCiclos(instrucao) + 1; // salva o número de ciclos + 1 uma vez que quando estiver livre, nao execute um ciclo a menos (possivel execucao apos o issue)
+        uf.tempo = this.getCiclos(instrucao); // salva o número de ciclos + 1 uma vez que quando estiver livre, nao execute um ciclo a menos (possivel execucao apos o issue)
         uf.ocupado = true;
         uf.operacao = instrucao.operacao;
         uf.endereco = instrucao.registradorS + '+' + instrucao.registradorT;
@@ -206,7 +289,7 @@ export default class Estado {
             let UFQueTemQueEsperar = this.estacaoRegistradores[instrucao.registradorR];
 
             // caso o nome seja de uma das unidades funcionais, marca que tem que esperar ela
-            if ((UFQueTemQueEsperar in this.unidadesFuncionais) || (UFQueTemQueEsperar in this.unidadesFuncionaisMemoria))
+            if ((UFQueTemQueEsperar in this.unidadesFuncionais) )
                 uf.qi = UFQueTemQueEsperar;
             else
                 uf.qi = null;
@@ -217,7 +300,7 @@ export default class Estado {
         let UFintQueTemQueEsperar = this.estacaoRegistradores[instrucao.registradorT];
 
         // caso o nome seja de uma das unidades funcionais, marca que tem que esperar ela
-        if ((UFintQueTemQueEsperar in this.unidadesFuncionais) || (UFintQueTemQueEsperar in this.unidadesFuncionaisMemoria))
+        if ((UFintQueTemQueEsperar in this.unidadesFuncionais) )
             uf.qj = UFintQueTemQueEsperar;
         else
             uf.qj = null;
@@ -261,7 +344,7 @@ export default class Estado {
             uf.vj = reg_j_inst;
         else {
             // caso o nome seja uma unidade funcional, este registrador vai ter o valor escrito ainda, entao tem que esperar
-            if ((reg_j in this.unidadesFuncionais) || (reg_j in this.unidadesFuncionaisMemoria))
+            if ((reg_j in this.unidadesFuncionais) )
                 uf.qj = reg_j;
             else
                 uf.vj = reg_j;
@@ -272,7 +355,9 @@ export default class Estado {
             uf.vk = reg_k_inst;
         else {
             // caso o nome seja uma unidade funcional, este registrador vai ter o valor escrito ainda, entao tem que esperar
-            if ((reg_k in this.unidadesFuncionais) || (reg_k in this.unidadesFuncionaisMemoria))
+            console.log("UNIDADES FUNCIONAIS");
+            console.log(this.unidadesFuncionais)
+            if ((reg_k in this.unidadesFuncionais))
                 uf.qk = reg_k;
             else
                 uf.vk = reg_k;
@@ -311,22 +396,22 @@ export default class Estado {
             }
         }
 
-        // percorre todas as unidades funcionais de memoria
-        for(let keyUF in this.unidadesFuncionaisMemoria) {
-            const ufOlhando = this.unidadesFuncionaisMemoria[keyUF];
+        // // percorre todas as unidades funcionais de memoria
+        // for(let keyUF in this.unidadesFuncionaisMemoria) {
+        //     const ufOlhando = this.unidadesFuncionaisMemoria[keyUF];
             
-            // se unidade estiver ocuapda
-            if (ufOlhando.ocupado === true) {
-                // caso esteja esperando a unidade, libera ela e subtrai o ciclo extra
-                if (ufOlhando.qi === UF.nome) {
-                    ufOlhando.qi = null;
-                    ufOlhando.tempo = ufOlhando.tempo - 1;
-                } else if (ufOlhando.qj === UF.nome) {
-                    ufOlhando.qj = null;
-                    ufOlhando.tempo = ufOlhando.tempo - 1;
-                }
-            }
-        }
+        //     // se unidade estiver ocuapda
+        //     if (ufOlhando.ocupado === true) {
+        //         // caso esteja esperando a unidade, libera ela e subtrai o ciclo extra
+        //         if (ufOlhando.qi === UF.nome) {
+        //             ufOlhando.qi = null;
+        //             ufOlhando.tempo = ufOlhando.tempo - 1;
+        //         } else if (ufOlhando.qj === UF.nome) {
+        //             ufOlhando.qj = null;
+        //             ufOlhando.tempo = ufOlhando.tempo - 1;
+        //         }
+        //     }
+        // }
     }
 
     desalocaUFMem(ufMem) {
@@ -374,23 +459,24 @@ export default class Estado {
     // funcao da fase de issue do tomasulo
 
         let novaInstrucao = this.getNovaInstrucao();  // busca uma nova instrucao
-        console.log("==============================");
-        console.log(novaInstrucao);
+        
         // se existe uma nova instrucao pra executar o issue
         if (novaInstrucao) {
             let ufInstrucao = this.verificaUFInstrucao(novaInstrucao.instrucao);  // verifica qual unidade essa instrucao usa
-            console.log("==============================");
-            console.log(ufInstrucao);
+            
             let UFParaUsar = this.getFUVazia(ufInstrucao);                        // pega a primeira unidade disponivel
-            console.log("============================== UF para usar");
-            console.log(UFParaUsar);
+            
             // caso exista uma unidade livre, caso contrario, nao faz nada (bolha)
             if (UFParaUsar) {
                 // se a unidade e de memoria, aloca uma unidade de memoria, caso contrario uma unidade normal
                 //if ((UFParaUsar.tipoUnidade == 'Load') || (UFParaUsar.tipoUnidade == 'Store'))
                 //    this.alocaFuMem(UFParaUsar, novaInstrucao.instrucao, novaInstrucao);
                 //else
+                    
+                    console.log("============================== nova inst");
+                    console.log(novaInstrucao);
                     this.alocaFU(UFParaUsar, novaInstrucao.instrucao, novaInstrucao);
+                    this.BufferReordenamento.push(UFParaUsar.estadoInstrucao);
                 
                 // escreve em qual ciclo o issue aconteceu
                 novaInstrucao.issue = this.clock;
@@ -435,33 +521,55 @@ export default class Estado {
             }
         }
     }
+    commitInstrucao(){//id='i${i}_commit'
+        if(this.BufferReordenamento.length >0){
 
+            console.info(this.BufferReordenamento);
+            
+            if(this.BufferReordenamento[0].aptoCommit){
+                if(this.verificaUFInstrucao(this.BufferReordenamento[0].instrucao) =="Branch"){
+                    let y = this.BufferReordenamento.shift();
+                    while(y!= undefined){
+                        this.limpaQuadro(this.estadoInstrucoes[y.instrucao.id] );
+                        y = this.BufferReordenamento.shift();
+                    }
+
+                }else{
+                let x =  this.BufferReordenamento.shift();
+                this.estadoInstrucoes[x.instrucao.id].commit = this.clock;
+                }
+            }
+
+            
+        }
+    }
     escreveInstrucao() {
     // fase de escrita do tomasulo
 
-        // percorre todas as unidades funcionais de memoria
-        for(let key in this.unidadesFuncionaisMemoria) {
-            const ufMem = this.unidadesFuncionaisMemoria[key];
+        // // percorre todas as unidades funcionais de memoria
+        // for(let key in this.unidadesFuncionaisMemoria) {
+        //     const ufMem = this.unidadesFuncionaisMemoria[key];
 
-            // caso a unidade esteja ocupada e o tempo for -1
-            if (ufMem.ocupado === true) {
-                if (ufMem.tempo === -1) {
-                    ufMem.estadoInstrucao.write = this.clock;   //escreve em qual ciclo escreveu no registrador
+        //     // caso a unidade esteja ocupada e o tempo for -1
+        //     if (ufMem.ocupado === true) {
+        //         if (ufMem.tempo === -1) {
+        //             ufMem.estadoInstrucao.write = this.clock;   //escreve em qual ciclo escreveu no registrador
 
-                    // verifica qual é o nome que esta na estacao de registradores
-                    let valorReg = this.estacaoRegistradores[ufMem.instrucao.registradorR];
+        //             // verifica qual é o nome que esta na estacao de registradores
+        //             let valorReg = this.estacaoRegistradores[ufMem.instrucao.registradorR];
 
-                    // se nenhuma outra uf vai escrever sobre o registrador, escreve nele
-                    if (valorReg === ufMem.nome) {
-                        this.estacaoRegistradores[ufMem.instrucao.registradorR] = 'VAL(' + ufMem.nome + ')';
-                    }
+        //             // se nenhuma outra uf vai escrever sobre o registrador, escreve nele
+        //             if (valorReg === ufMem.nome) {
+        //                 this.estacaoRegistradores[ufMem.instrucao.registradorR] = 'VAL(' + ufMem.nome + ')';
+        //             }
 
-                    // libera as ufs que esta esperando essa terminar e desaloca essa uf
-                    this.liberaUFEsperandoResultado(ufMem);
-                    this.desalocaUFMem(ufMem);
-                }
-            }
-        }
+        //             // libera as ufs que esta esperando essa terminar e desaloca essa uf
+        //             this.liberaUFEsperandoResultado(ufMem);
+        //             this.desalocaUFMem(ufMem);
+                    
+        //         }
+        //     }
+        // }
 
         // percorre todas as unidades funcionais
         for(let key in this.unidadesFuncionais) {
@@ -479,10 +587,19 @@ export default class Estado {
                     if (valorReg === uf.nome) {
                         this.estacaoRegistradores[uf.instrucao.registradorR] = 'VAL(' + uf.nome + ')';
                     }
-
+                    console.log("UFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+                    console.log(uf);
+                    this.estadoInstrucoes[uf.instrucao.id].aptoCommit = true;
+                    if(uf.tipoUnidade == "Branch"){
+                        this.PulaParaLabel(uf.instrucao.registradorT,uf.instrucao.id);
+                    
+                    }
+                    
                     // libera as ufs que esta esperando essa terminar e desaloca essa uf
                     this.liberaUFEsperandoResultado(uf);
                     this.desalocaUF(uf);
+                    
+                    
                 }
             }
         }
@@ -497,13 +614,13 @@ export default class Estado {
         this.issueNovaInstrucao();
         this.executaInstrucao();
         this.escreveInstrucao();
-
+        this.commitInstrucao();
         // prints no console para debug
         console.log('Estado instrução:');
         console.log(JSON.stringify(this.estadoInstrucoes, null, 2));
 
-        console.log('\nUnidades Funcionais memória:');
-        console.log(JSON.stringify(this.unidadesFuncionaisMemoria, null, 2));
+        // console.log('\nUnidades Funcionais memória:');
+        // console.log(JSON.stringify(this.unidadesFuncionaisMemoria, null, 2));
 
         console.log('\nUnidades Funcionais:');
         console.log(JSON.stringify(this.unidadesFuncionais, null, 2));

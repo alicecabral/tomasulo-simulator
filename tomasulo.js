@@ -56,10 +56,10 @@ var exemplo = {
             "T": "R2"
         },
         {
-            "D": "BEQ",
+            "D": "DIV",
             "R": "R2",
             "S": "R4",
-            "T": "ini"
+            "T": "R5"
         }
     ]
 }
@@ -263,6 +263,7 @@ function atualizaTabelaEstadoInstrucaoHTML(tabelaInsts) {
         $(`#i${inst["posicao"]}_is`).text(inst["issue"] ? inst["issue"] : "");
         $(`#i${inst["posicao"]}_ec`).text(inst["exeCompleta"] ? inst["exeCompleta"] : "");
         $(`#i${inst["posicao"]}_wr`).text(inst["write"] ? inst["write"] : "");
+        $(`#i${inst["posicao"]}_commit`).text(inst["commit"] ? inst["commit"] : "");
     }
 }
 
@@ -306,7 +307,7 @@ function gerarTabelaEstadoInstrucaoHTML(diagrama) {
     var s = (
         "<h3>Status das Instruções</h3><table class='result'>"
         + "<tr><th></th><th>Instrução</th><th>i</th><th>j</th>"
-        + "<th>k</th><th>Issue</th><th>Exec.<br>Completa</th><th>Write</th></tr>"
+        + "<th>k</th><th>Issue</th><th>Exec.<br>Completa</th><th>Enable to Write</th><th>Commit</th></tr>"
     );
 
     for (let i = 0 ; i < diagrama.configuracao["numInstrucoes"]; ++i) {
@@ -315,7 +316,7 @@ function gerarTabelaEstadoInstrucaoHTML(diagrama) {
             `<tr> <td>I${i}</td> <td>${instrucao["operacao"]}</td>
             <td>${instrucao["registradorR"]}</td> <td>${instrucao["registradorS"]}</td> <td>${instrucao["registradorT"]}</td>
             <td id='i${i}_is'></td></td> <td id='i${i}_ec'></td>
-            <td id='i${i}_wr'></td> </tr>`
+            <td id='i${i}_wr'></td> <td id='i${i}_commit'></td> </tr>`
         );
     }
 
@@ -551,7 +552,7 @@ $(document).ready(function() {
             return;
         }
         if(terminou) {
-            alert("Todas as instruções estão completadas.");
+            alert("Todas as instruções foram finalizadas");
             return;
         }
         // terminou = avancaCiclo(diagrama);
