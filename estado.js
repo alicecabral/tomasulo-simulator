@@ -1,6 +1,6 @@
 export default class Estado {
     constructor(CONFIG, instrucoes) {
-        // salva as configurações passadas
+        
         this.configuracao = {
             "numInstrucoes": CONFIG["nInst"], // quantidade de instrucoes
             "ciclos": CONFIG["ciclos"],       // numero de ciclos gastos por cada Unidade Funcional 
@@ -57,39 +57,11 @@ export default class Estado {
             
         }
 
-        // // cria as unidades funcionais da memoria
-        // this.unidadesFuncionaisMemoria = {}
-        // for(var tipoUnidade in CONFIG["unidadesMem"]) {
-        //     for(let i = 0; i < CONFIG["unidadesMem"][tipoUnidade]; i++) {
-        //         let unidadeFuncionalMemoria = {};
-        //         unidadeFuncionalMemoria["instrucao"] = null;            // armazana a instrucao que esta executando
-        //         unidadeFuncionalMemoria["estadoInstrucao"] = null;      // salva todo o estado da instrucao
-        //         unidadeFuncionalMemoria["tipoUnidade"] = tipoUnidade;   // define o tipo da unidade
-        //         unidadeFuncionalMemoria["tempo"] = null;                // tempo que ainda falta pra instrucao acabar
-
-        //         let nome = tipoUnidade + (i+1);                         //cria o nome da uf 
-        //         unidadeFuncionalMemoria["nome"] = nome;
-        //         unidadeFuncionalMemoria["ocupado"] = false;             // define se a uf ta ocuapda ou nao   
-        //         unidadeFuncionalMemoria["qi"] = null;                   // uf que esta gerando o valor de vi
-        //         unidadeFuncionalMemoria["qj"] = null;                   // uf que esta gerando o valor de vj (registrador de deslocamento)
-                
-        //         unidadeFuncionalMemoria["operacao"] = null;             // operacao que esta sendo executada
-        //         unidadeFuncionalMemoria["endereco"] = null;             // endereco onde vai ser buscado
-        //         unidadeFuncionalMemoria["destino"] = null;              // registrador de destino
-                
-        //         this.unidadesFuncionaisMemoria[nome] = unidadeFuncionalMemoria;
-        //     }
-        // }
-
-        this.clock = 0;       // define o clock atual
+      
+        this.clock = 0;       
 
         this.estacaoRegistradores = {}
-        // // cria os registradores de ponto flutuante
-        // for(let i = 0; i < 32; i += 2) {
-        //     this.estacaoRegistradores["F" + i] = null;
-        // }
 
-        // cria os registradores de inteiro (necessarios para impedir erros com as operacoes de inteiro)
         for(let i = 0; i < 10; i++) {
             this.estacaoRegistradores["R" + i] = null;
         }
@@ -98,9 +70,7 @@ export default class Estado {
     BufferReordenamento = [];
 
     getNovaInstrucao() {
-    // Funcao a busca de uma nova instrucao
-    // Percorre todo o vetor de instrucoes procurando por uma em que não ocorreu issue ainda. retornando a primeira que encontou
-    // Caso nao encontre nenhuma, retora undefined
+ 
 
         for (let i = 0; i < this.estadoInstrucoes.length; i++) {
             const element = this.estadoInstrucoes[i];
@@ -281,7 +251,7 @@ export default class Estado {
     alocaFU(uf, instrucao, estadoInstrucao) {
         uf.instrucao = instrucao;
         uf.estadoInstrucao = estadoInstrucao;
-        uf.tempo = this.getCiclos(instrucao);
+        uf.tempo = this.getCiclos(instrucao) + 1; 
         uf.ocupado = true;
         uf.operacao = instrucao.operacao;
 
@@ -294,7 +264,6 @@ export default class Estado {
         if ((instrucao.operacao === 'BNE') || (instrucao.operacao === 'BEQ')) {
             reg_j = this.estacaoRegistradores[instrucao.registradorR];   
             reg_k = this.estacaoRegistradores[instrucao.registradorS];   
-
             reg_j_inst = instrucao.registradorR;                         
             reg_k_inst = instrucao.registradorS;
         } else {
@@ -304,21 +273,23 @@ export default class Estado {
             reg_j_inst = instrucao.registradorS;                         
             reg_k_inst = instrucao.registradorT;
         }
+
+       
         if (reg_j === null || reg_j === undefined)
             uf.vj = reg_j_inst;
         else {
-         
+            
             if ((reg_j in this.unidadesFuncionais) )
                 uf.qj = reg_j;
             else
                 uf.vj = reg_j;
         }
 
-        
+      
         if (reg_k === null || reg_k === undefined)
             uf.vk = reg_k_inst;
         else {
-        
+           
             console.log("UNIDADES FUNCIONAIS");
             console.log(this.unidadesFuncionais)
             if ((reg_k in this.unidadesFuncionais))
@@ -330,18 +301,16 @@ export default class Estado {
 
 
     liberaUFEsperandoResultado(UF) {
-    
-
-    
+   
         for(let keyUF in this.unidadesFuncionais) {
             const ufOlhando = this.unidadesFuncionais[keyUF];
             
-    
+           
             if ((ufOlhando.ocupado === true) && 
                ((ufOlhando.qj === UF.nome) || 
                (ufOlhando.qk === UF.nome))) {
 
-    
+           
                 if (ufOlhando.qj === UF.nome) {
                     ufOlhando.vj = 'VAL(' + UF.nome + ')';   
                     ufOlhando.qj = null;                     
@@ -353,14 +322,14 @@ export default class Estado {
                     ufOlhando.qk = null;                     
                 }
 
-                
+               
                 if ((ufOlhando.qj === null) && (ufOlhando.qk === null)) {
-                    ufOlhando.tempo = ufOlhando.tempo - 1;
+                    ufOlhando.tempo = ufOlhando.tempo - 1; 
                 }
             }
         }
 
-        
+       
     }
 
     desalocaUFMem(ufMem) {
@@ -377,7 +346,7 @@ export default class Estado {
     }
 
     desalocaUF(uf) {
-    
+  
         uf.instrucao = null;
         uf.estadoInstrucao = null;
         uf.tempo = null;
@@ -390,6 +359,7 @@ export default class Estado {
     }
 
     verificaSeJaTerminou() {
+   
         let qtdInstrucaoNaoTerminada = 0;
         for (let i = 0; i < this.estadoInstrucoes.length; i++) {
             const element = this.estadoInstrucoes[i];
@@ -402,17 +372,17 @@ export default class Estado {
     }
 
     issueNovaInstrucao() {
-    
+  
 
-        let novaInstrucao = this.getNovaInstrucao();
+        let novaInstrucao = this.getNovaInstrucao(); 
         
+       
         if (novaInstrucao) {
             let ufInstrucao = this.verificaUFInstrucao(novaInstrucao.instrucao);  
-            
             let UFParaUsar = this.getFUVazia(ufInstrucao);                        
             
-            
             if (UFParaUsar) {
+             
                     
                     console.log("============================== nova inst");
                     console.log(novaInstrucao);
@@ -422,6 +392,7 @@ export default class Estado {
                 
                 novaInstrucao.issue = this.clock;
 
+                
                 if ((UFParaUsar.tipoUnidade !== 'Store') && (UFParaUsar.operacao !== 'BEQ') && (UFParaUsar.operacao !== 'BEQ'))
                     this.escreveEstacaoRegistrador(novaInstrucao.instrucao, UFParaUsar.nome);
             }
@@ -429,20 +400,22 @@ export default class Estado {
     }
 
     executaInstrucao() {
+
         for(let key in this.unidadesFuncionais) {
             var uf = this.unidadesFuncionais[key];
 
             
             if ((uf.ocupado === true) && (uf.vj !== null) && (uf.vk !== null)) {
-                uf.tempo = uf.tempo - 1; 
+                uf.tempo = uf.tempo - 1;   
 
+   
                 if (uf.tempo === 0) {
                     uf.estadoInstrucao.exeCompleta = this.clock;
                 }
             }
         }
     }
-    commitInstrucao(){
+    commitInstrucao(){//id='i${i}_commit'
         if(this.BufferReordenamento.length >0){
 
             console.info(this.BufferReordenamento);
@@ -465,16 +438,19 @@ export default class Estado {
         }
     }
     escreveInstrucao() {
+    
         for(let key in this.unidadesFuncionais) {
             const uf = this.unidadesFuncionais[key];
 
             
             if (uf.ocupado === true) {
                 if (uf.tempo === -1) {
-                    uf.estadoInstrucao.write = this.clock;
+                    uf.estadoInstrucao.write = this.clock;   
 
+                   
                     let valorReg = this.estacaoRegistradores[uf.instrucao.registradorR];
 
+                   
                     if (valorReg === uf.nome) {
                         this.estacaoRegistradores[uf.instrucao.registradorR] = 'VAL(' + uf.nome + ')';
                     }
@@ -486,8 +462,10 @@ export default class Estado {
                     
                     }
                     
+                
                     this.liberaUFEsperandoResultado(uf);
                     this.desalocaUF(uf);
+                    
                     
                 }
             }
@@ -495,13 +473,19 @@ export default class Estado {
     }
 
     executa_ciclo() {
-        this.clock++;
+
+
+        this.clock++;  
+       
         this.issueNovaInstrucao();
         this.executaInstrucao();
         this.escreveInstrucao();
         this.commitInstrucao();
+   
         console.log('Estado instrução:');
         console.log(JSON.stringify(this.estadoInstrucoes, null, 2));
+
+    
 
         console.log('\nUnidades Funcionais:');
         console.log(JSON.stringify(this.unidadesFuncionais, null, 2));
@@ -509,6 +493,8 @@ export default class Estado {
         console.log('Estado registradores:');
         console.log(JSON.stringify(this.estacaoRegistradores, null, 2));
 
+   
         return this.verificaSeJaTerminou();
     }
+
 }
