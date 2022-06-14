@@ -1,0 +1,125 @@
+table {
+	font-family: monospace;
+}
+
+th, td {
+    overflow: auto;
+	padding: 2px;
+}
+
+.result, .result td, .result th {
+	border: 1px solid black;
+	border-collapse: collapse;
+	padding: 10px;
+    text-align: center;
+    font:  15px arial, sans-serif;
+    margin: auto;
+    margin-top: 18px;
+}
+
+h3 {
+    font: bold 20px arial, sans-serif;
+    background-color: #CFCFCF;
+    text-align: center;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    padding: 5px;
+    margin-top:18px;
+}
+
+.result th {
+    background: #CFCFCF;
+    font: bold 15px arial, sans-serif;
+}
+
+body {
+    background: #c0c0c0;
+    background: linear-gradient(0deg,#c0c0c0 0%, #ffffff 60%);
+    background: -webkit-linear-gradient(0deg,#c0c0c0 0%, #ffffff 60%);
+    background: -moz-linear-gradient(0deg,#c0c0c0 0%, #ffffff 60%);
+}
+
+.header {
+    background-color: #56a7a7;
+    padding: 20px;
+}
+
+h1 {
+    color: #f9fbfc;
+    text-align: center;
+}
+
+.left {
+    background-color: #fcea90;
+    padding: 30px;
+    box-shadow: 1px 2px 7px 0px rgba(0,0,0,0.7);
+    -webkit-box-shadow: 1px 2px 7px 0px rgba(0,0,0,0.7);
+    -moz-box-shadow: 1px 2px 7px 0px rgba(0,0,0,0.7);
+}
+
+.botao {
+    background: #a0dbdb;
+    color: black;
+    height: 35px;
+    width: 200px;
+    font: bold 15px arial, sans-serif;
+    border-radius: 10px;
+    border: 0.5px solid black;
+    margin-left: 95px;
+    margin-bottom: 10px;
+}
+
+hr {
+    color: black;
+    border-width: 100px;
+    border: 1px solid;
+}
+
+.titulo {
+    text-align: center;
+    font: bold 15px arial, sans-serif;
+    color: black;
+}
+
+.subtitulo {
+    padding-bottom: 10px;
+    color: black;
+}
+
+#confirmarNInst {
+    background: #a0dbdb;
+    color: black;
+    height: 35px;
+    width: 50px;
+    font: bold 15px arial, sans-serif;
+    border-radius: 10px;
+    border: 0.5px solid black;
+    margin-top: 10px;
+    margin-left: 170px;
+}
+
+.right {
+    padding: 30px;
+}
+
+#proximo {
+    background: #a0dbdb;
+    color: black;
+    height: 35px;
+    width: 200px;
+    font: bold 15px arial, sans-serif;
+    border-radius: 10px;
+    border: 0.5px solid black;
+    margin-left: 320px;
+}
+
+#resultado {
+    background: #a0dbdb;
+    color: black;
+    height: 35px;
+    width: 200px;
+    font: bold 15px arial, sans-serif;
+    border-radius: 10px;
+    border: 0.5px solid black;
+    margin-left: 320px;
+}

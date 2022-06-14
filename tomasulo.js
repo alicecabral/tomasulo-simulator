@@ -1,6 +1,72 @@
 //tomasulo.js
 import Estado from "./estado.js"
 
+var exemplo = {
+    "config": {
+        "ciclos": {
+            "ciclosInt": 3,
+            "ciclosFPAdd": 8,
+            "ciclosFPMul": 10,
+            "ciclosFPDiv": 15
+        },
+        "unidades": {
+            "fuLoad": 6,
+            "fuStore": 3,
+            "fuInt": 3,
+            "fuFPAdd": 3,
+            "fuFPMul": 2
+        }
+    },
+
+    "insts": [
+        {
+            "D": "ADD",
+            "R": "R2",
+            "S": "R0",
+            "T": "R1"
+        },
+        {
+            "D": "LD",
+            "R": "R2",
+            "S": "0",
+            "T": "R2"
+        },
+        {
+            "D": "MULT",
+            "R": "R0",
+            "S": "R2",
+            "T": "R2"
+        },
+        {
+            "D": "SUB",
+            "R": "R0",
+            "S": "R4",
+            "T": "R2"
+        },
+        {
+            "D": "DIV",
+            "R": "R9",
+            "S": "R4",
+            "T": "R6"
+        },
+        {
+            "D": "SD",
+            "R": "R6",
+            "S": "0",
+            "T": "R2"
+        },
+        {
+            "D": "DIV",
+            "R": "R2",
+            "S": "R4",
+            "T": "R5"
+        }
+    ]
+}
+
+
+
+
 
 function getConfig() {
     var conf = {};
@@ -13,56 +79,41 @@ function getConfig() {
 
     var ciclos = {}
 
-    ciclos["Integer"] = $("#ciclosInt").val();
-    ciclos["Add"] = $("#ciclosFPAdd").val();
-    ciclos["Mult"] = $("#ciclosFPMul").val();
-    ciclos["Div"] = $("#ciclosFPDiv").val();
-    ciclos["Load"] = $("#ciclosLoad").val();
-    ciclos["Store"] = $("#ciclosStore").val();
+    ciclos["Branch"] = $("#ciclosInt").val();//BNE e BEQ
+    ciclos["Add"] = $("#ciclosFPAdd").val();//ADD e SUB
+    ciclos["Mult"] = $("#ciclosFPMul").val();// MULT e DIV
+    ciclos["Load"] = $("#ciclosLoad").val();// LOAD STORE
 
 
-    if ((ciclos["Integer"] < 1) || (ciclos["Add"] < 1) || (ciclos["Div"] < 1) ||
-        (ciclos["Mult"] < 1) || (ciclos["Load"] < 1)  || (ciclos["Store"] < 1)) {
+    if ((ciclos["Branch"] < 1) || (ciclos["Add"] < 1) || (ciclos["Mult"] < 1) || (ciclos["Load"] < 1)) {
         alert("A quantidade de ciclos por instrução, para todas as unidades, deve ser de no mínimo 1 ciclo!");
         return null;
     }
 
     conf["ciclos"] = ciclos
 
-    var unidades = {}
-    unidades["Integer"] = $("#fuInt").val();
+    var unidades = {}//3 unidades de execução
+    unidades["Branch"] = $("#fuInt").val();
     unidades["Add"] = $("#fuFPAdd").val();
     unidades["Mult"] = $("#fuFPMul").val();
-    
-    if ((unidades["Integer"] < 1) || (unidades["Add"] < 1) ||
-    (unidades["Mult"] < 1)) {
+    unidades["Load"] = $("#fuLoad").val();
+    if ((unidades["Branch"] < 1) || (unidades["Add"] < 1) ||
+    (unidades["Mult"] < 1) || (unidades["Load"] < 1)) {
         alert("A quantidade de unidades funcionais deve ser no mínimo 1!");
         return;
     }
-    
-    var unidadesMem = {}
-    unidadesMem["Load"] = $("#fuLoad").val();
-    unidadesMem["Store"] = $("#fuStore").val();
-
-
-    if(unidades["Load"] < 1 || unidadesMem["Store"] < 1) {
-        alert("A quantidade de unidades funcionais de memória deve ser no mínimo 1!");
-        return;
-    }
-
 
     conf["unidades"] = unidades;
-    conf["unidadesMem"] = unidadesMem;
     return conf;
 }
 
 function getInst(i) {
     var inst = {};
     inst["indice"] = i;
-    inst["d"] = $(`#D${i}`).val();
-    inst["r"] = $(`#R${i}`).val();
-    inst["s"] = $(`#S${i}`).val();
-    inst["t"] = $(`#T${i}`).val();
+    inst["d"] = $(`#D${i}`).val();//nome
+    inst["r"] = $(`#R${i}`).val();//1 reg
+    inst["s"] = $(`#S${i}`).val();//1 op
+    inst["t"] = $(`#T${i}`).val();//ultimo op
 
     return inst;
 }
@@ -98,15 +149,16 @@ function registradorInvalidoF(registrador) {
 function validaInstrucao(instrucao) {
     var unidade = getUnidadeInstrucao(instrucao["d"]);
     if(!unidade) {
-        alert("O comando da instrução é inváilido");
+        alert("O comando da instrução é inváilido" + unidade + " " + instrucao) ;
+        console.log(instrucao);
         return false;
     }
-
-    if(unidade == "Load" || unidade == "Store") {
-        var comando = instrucao["d"]
+    var comando = instrucao["d"]
+    if(unidade == "Load") {
+        
 
         if(comando == "LD" || comando == "SD") {
-            if(registradorInvalidoF(instrucao["r"]) || isNaN(parseInt(instrucao["s"])) || registradorInvalidoR(instrucao["t"])) {
+            if(registradorInvalidoR(instrucao["r"]) || isNaN(parseInt(instrucao["s"])) || registradorInvalidoR(instrucao["t"])) {
                 alertValidaInstrucao(instrucao);
                 return false;
             }
@@ -114,44 +166,39 @@ function validaInstrucao(instrucao) {
         }
     }
 
-    if(unidade == "Integer") {
-        var comando = instrucao["d"]
+    if(unidade == "Branch") {
+        
 
-        if(comando == "BEQ") {
+        if(comando == "BEQ" || comando =="BNE") {//beq r1,r2,ini
             if(registradorInvalidoR(instrucao["r"]) || registradorInvalidoR(instrucao["s"]) || (instrucao["t"].replace(" ", "") == "")) {
                 alertValidaInstrucao(instrucao);
                 return false;
             }
             return true;
         }
-        if(comando == "BNEZ") {
-            if(registradorInvalidoR(instrucao["r"]) || (instrucao["s"].replace(" ", "") == "") || (instrucao["t"].replace(" ", "") != "")) {
-                alertValidaInstrucao(instrucao);
-                return false;
-            }
-            return true;
-        }
-        if(comando == "ADD") {
+    }
+    if(unidade =="Add"){//add r1,r2,r3
+        
+        if(comando == "ADD" || comando =="SUB") {
             if(registradorInvalidoR(instrucao["r"]) || registradorInvalidoR(instrucao["s"]) || registradorInvalidoR(instrucao["t"])) {
                 alertValidaInstrucao(instrucao);
                 return false;
             }
             return true;
         }
-        if(comando == "DADDUI") {
-            if(registradorInvalidoR(instrucao["r"]) || registradorInvalidoR(instrucao["s"]) || isNaN(parseInt(instrucao["t"]))) {
+    }
+    if(unidade=="Mult"){
+        
+        if(comando == "MULT" || comando =="DIV") {// Ex: mult r1,r2, r0 ; div r1, r2, r0
+            if(registradorInvalidoR(instrucao["r"]) || registradorInvalidoR(instrucao["s"]) ) {
                 alertValidaInstrucao(instrucao);
                 return false;
             }
+            return true;
         }
-        return true;
-    }
 
-    if(registradorInvalidoF(instrucao["r"]) || registradorInvalidoF(instrucao["s"]) || registradorInvalidoF(instrucao["t"])) {
-        alertValidaInstrucao(instrucao);
-        return false;
     }
-    return true;
+    
 
 }
 
@@ -172,28 +219,23 @@ function getAllInst(nInst) {
 function getUnidadeInstrucao(instrucao) {
     switch (instrucao) {
         case "ADD":
-            return "Integer";
-        case "DADDUI":
-            return "Integer";
+            return "Add";
+        case "SUB":
+            return "Add";
+            
         case "BEQ":
-            return "Integer";
-        case "BNEZ":
-            return "Integer";
+            return "Branch";
+        case "BNE":
+            return "Branch";
 
         case "SD":
-            return 'Store';
+            return 'Load';
         case "LD":
             return "Load";
         
-
-        case "SUBD":
-            return "Add";
-        case "ADDD":
-            return "Add";
-
-        case "MULTD":
+        case "MULT":
             return "Mult";
-        case "DIVD":
+        case "DIV":
             return "Mult";
 
         default:
@@ -209,6 +251,7 @@ function atualizaTabelaEstadoInstrucaoHTML(tabelaInsts) {
         $(`#i${inst["posicao"]}_is`).text(inst["issue"] ? inst["issue"] : "");
         $(`#i${inst["posicao"]}_ec`).text(inst["exeCompleta"] ? inst["exeCompleta"] : "");
         $(`#i${inst["posicao"]}_wr`).text(inst["write"] ? inst["write"] : "");
+        $(`#i${inst["posicao"]}_commit`).text(inst["commit"] ? inst["commit"] : "");
     }
 }
 
@@ -227,7 +270,17 @@ function atualizaTabelaEstadoUFHTML(ufs) {
 
 function atualizaTabelaEstadoMenHTML(men) {
     for (var reg in men) {
-        $(`#${reg}`).html(men[reg] ? men[reg] : "&nbsp;");
+        var teste = reg.charAt(1)// EX: R0
+        if(men[reg] !=null){
+            console.log("entreiiii  " + `#F${teste}`);
+            console.log(men[reg]);
+            
+            $(`#F${teste}`).html(men[reg]);
+
+        }else{
+            $(`#F${teste}`).html("&nbsp;");
+        }
+        
     }
 }
 
@@ -240,9 +293,9 @@ function atualizaClock(clock) {
 
 function gerarTabelaEstadoInstrucaoHTML(diagrama) {
     var s = (
-        "<h3>Status das instruções</h3><table class='result'>"
+        "<h3>Status das Instruções</h3><table class='result'>"
         + "<tr><th></th><th>Instrução</th><th>i</th><th>j</th>"
-        + "<th>k</th><th>Issue</th><th>Exec.<br>Completa</th><th>Write</th></tr>"
+        + "<th>k</th><th>Issue</th><th>Exec.<br>Completa</th><th>Enable to Write</th><th>Commit</th></tr>"
     );
 
     for (let i = 0 ; i < diagrama.configuracao["numInstrucoes"]; ++i) {
@@ -251,7 +304,7 @@ function gerarTabelaEstadoInstrucaoHTML(diagrama) {
             `<tr> <td>I${i}</td> <td>${instrucao["operacao"]}</td>
             <td>${instrucao["registradorR"]}</td> <td>${instrucao["registradorS"]}</td> <td>${instrucao["registradorT"]}</td>
             <td id='i${i}_is'></td></td> <td id='i${i}_ec'></td>
-            <td id='i${i}_wr'></td> </tr>`
+            <td id='i${i}_wr'></td> <td id='i${i}_commit'></td> </tr>`
         );
     }
 
@@ -261,7 +314,7 @@ function gerarTabelaEstadoInstrucaoHTML(diagrama) {
 
 function gerarTabelaEstadoUFHTML(diagrama) {
     var s = (
-        "<h3>Reservations Stations</h3><table class='result'><tr> <th>Tempo</th> <th>UF</th> <th>Ocupado</th>"
+        "<h3>Estações de Reserva</h3><table class='result'><tr> <th>Tempo</th> <th>UF</th> <th>Ocupado</th>"
         + "<th>Op</th> <th>Vj</th> <th>Vk</th> <th>Qj</th> <th>Qk</th>"
     );
 
@@ -283,21 +336,21 @@ function gerarTabelaEstadoUFHTML(diagrama) {
 }
 
 function gerarTabelaEstadoMenHTML(diagrama) {
-    var s = `<h3>Status dos registradores</h3> <table class="result">`;
+    var s = `<h3>Status dos Registradores</h3> <table class="result">`;
 
-    for(var i = 0; i < 2; ++i) {
+      for(var i = 0; i < 1; i++) {
         s += `<tr>`
-        for(var j = 0; j < 16; j += 2) {
-            s += `<th>F${j+i*16}</th>`
+        for(var j = 0; j < 10; j++) {
+            s += `<th>R${j+i}</th>`
         }
-        s += `</tr> <tr>`
-        for(var j = 0; j < 16; j += 2) {
-            s += `<td id="F${j+i*16}">&nbsp;</td>`
+        s += `</tr><tr>`
+        for(var j = 0; j < 10; j ++) {
+            s += `<td id="F${j+i}">&nbsp;</td>`
         }
         s += `</tr>`
-    }
+      }
 
-    s += "</table>"
+    s += "</table><br>"
     $("#estadoMem").html(s);
 }
 
@@ -345,14 +398,14 @@ function geraTabelaParaInserirInstrucoes(nInst) {
                         "<option selected value = \"\">None</option>" +
                         "<option value=\"LD\">LD</option>" +
                         "<option value=\"SD\">SD</option>" +
-                        "<option value=\"MULTD\">MULTD</option>" +
-                        "<option value=\"DIVD\">DIVD</option>" +
-                        "<option value=\"ADDD\">ADDD</option>" +
-                        "<option value=\"SUBD\">SUBD</option>" +
+                        "<option value=\"MULT\">MULT</option>" +
+                        "<option value=\"DIV\">DIV</option>" +
+                        
+                        "<option value=\"SUB\">SUB</option>" +
                         "<option value=\"ADD\">ADD</option>" +
-                        "<option value=\"DADDUI\">DADDUI</option>" +
+                        
                         "<option value=\"BEQ\">BEQ</option>" +
-                        "<option value=\"BNEZ\">BNEZ</option>" +
+                        "<option value=\"BNE\">BNE</option>" +
                     "</td>" +
                     "<td><input type=\"text\" name=\""+ r + "\" id=\""+ r + "\" size=\"3\" maxlength=\"3\" /></td>" +
                     "<td><input type=\"text\" name=\""+ s + "\" id=\""+ s + "\" size=\"3\" maxlength=\"5\" /></td>" +
@@ -367,14 +420,8 @@ function geraTabelaParaInserirInstrucoes(nInst) {
 // -----------------------------------------------------------------------------
 
 function carregaExemplo() {
-    var exN = $("#exemploSelect").val();
 
-    $.getJSON(`./exemplos/ex${exN}.json`, function() {
-        console.log("Lido :3");
-
-    }).fail(function() {
-      alert("Não foi possivel carregar o exemplo.")
-    }).done(function(data) {
+    var data = exemplo;
         $("#nInst").val(data["insts"].length);
         var confirmou = confirmarNInst();
 
@@ -394,8 +441,7 @@ function carregaExemplo() {
         }
 
 
-    });
-}
+    };
 
 
 function confirmarNInst() {
@@ -472,6 +518,7 @@ $(document).ready(function() {
         }
         var insts = getAllInst(CONFIG["nInst"]);
         if(!insts) {
+            alert("insts é null, deu erro");
             return;
         }
         diagrama = new Estado(CONFIG, insts);
@@ -480,22 +527,20 @@ $(document).ready(function() {
         gerarTabelaEstadoUFHTML(diagrama);
         atualizaTabelaEstadoUFHTML(diagrama["uf"]);
         gerarTabelaEstadoMenHTML(diagrama);
-        gerarTabelaEstadoUFMem(diagrama);
-        atualizaTabelaEstadoUFMemHTML(diagrama["ufMem"]);
         terminou = false;
         $("#clock").html("<h3>Clock: <small id='clock'>0</small></h3>");
     });
 
     $("#proximo").click(function() {
+        
         if(!diagrama) {
             alert("Envie primeiro");
             return;
         }
         if(terminou) {
-            alert("Todas as instruções estão completadas.");
+            alert("Todas as instruções foram finalizadas");
             return;
         }
-        // terminou = avancaCiclo(diagrama);
         terminou = diagrama.executa_ciclo();
         atualizaTabelaEstadoInstrucaoHTML(diagrama.estadoInstrucoes);
         atualizaTabelaEstadoUFMemHTML(diagrama.unidadesFuncionaisMemoria);
