@@ -45,7 +45,7 @@ var exemplo = {
         },
         {
             "D": "DIV",
-            "R": "R10",
+            "R": "R9",
             "S": "R4",
             "T": "R6"
         },
@@ -77,9 +77,9 @@ function getConfig() {
         return null;
     }
 
-    var ciclos = {}//4 tipos de ciclos para as instrucoes
+    var ciclos = {}
 
-    ciclos["Branch"] = $("#ciclosInt").val();//trocar Branch por branch, BEQ e BNEZ
+    ciclos["Branch"] = $("#ciclosInt").val();//BNE e BEQ
     ciclos["Add"] = $("#ciclosFPAdd").val();//ADD e SUB
     ciclos["Mult"] = $("#ciclosFPMul").val();// MULT e DIV
     ciclos["Load"] = $("#ciclosLoad").val();// LOAD STORE
@@ -102,20 +102,8 @@ function getConfig() {
         alert("A quantidade de unidades funcionais deve ser no mínimo 1!");
         return;
     }
-    
-    // var unidadesMem = {}
-    // unidadesMem["Load"] = $("#fuLoad").val();
-    // unidadesMem["Store"] = $("#fuStore").val();
-
-
-    // if(unidades["Load"] < 1 || unidadesMem["Store"] < 1) {
-    //     alert("A quantidade de unidades funcionais de memória deve ser no mínimo 1!");
-    //     return;
-    // }
-
 
     conf["unidades"] = unidades;
-    // conf["unidadesMem"] = unidadesMem;
     return conf;
 }
 
@@ -201,7 +189,7 @@ function validaInstrucao(instrucao) {
     }
     if(unidade=="Mult"){
         
-        if(comando == "MULT" || comando =="DIV") {//mult r1,r2
+        if(comando == "MULT" || comando =="DIV") {// Ex: mult r1,r2, r0 ; div r1, r2, r0
             if(registradorInvalidoR(instrucao["r"]) || registradorInvalidoR(instrucao["s"]) ) {
                 alertValidaInstrucao(instrucao);
                 return false;
@@ -282,7 +270,7 @@ function atualizaTabelaEstadoUFHTML(ufs) {
 
 function atualizaTabelaEstadoMenHTML(men) {
     for (var reg in men) {
-        var teste = reg.charAt(1)//R0
+        var teste = reg.charAt(1)// EX: R0
         if(men[reg] !=null){
             console.log("entreiiii  " + `#F${teste}`);
             console.log(men[reg]);
@@ -432,9 +420,7 @@ function geraTabelaParaInserirInstrucoes(nInst) {
 // -----------------------------------------------------------------------------
 
 function carregaExemplo() {
-    //var exN = $("#exemploSelect").val();
 
-   
     var data = exemplo;
         $("#nInst").val(data["insts"].length);
         var confirmou = confirmarNInst();
@@ -555,7 +541,6 @@ $(document).ready(function() {
             alert("Todas as instruções foram finalizadas");
             return;
         }
-        // terminou = avancaCiclo(diagrama);
         terminou = diagrama.executa_ciclo();
         atualizaTabelaEstadoInstrucaoHTML(diagrama.estadoInstrucoes);
         atualizaTabelaEstadoUFMemHTML(diagrama.unidadesFuncionaisMemoria);
