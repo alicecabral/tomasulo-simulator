@@ -4,10 +4,10 @@ import Estado from "./estado.js"
 var exemplo = {
     "config": {
         "ciclos": {
-            "ciclosInt": 3,
-            "ciclosFPAdd": 8,
-            "ciclosFPMul": 10,
-            "ciclosFPDiv": 15
+            "ciclosInt": 4,
+            "ciclosFPAdd": 2,
+            "ciclosFPMul": 3,
+            "ciclosLoad": 6
         },
         "unidades": {
             "fuLoad": 6,
